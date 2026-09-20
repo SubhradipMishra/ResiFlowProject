@@ -69,13 +69,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenPortal }) => {
         className={`sticky top-0 z-40 transition-all duration-300 ${
           isScrolled
             ? 'bg-white/95 backdrop-blur-xl shadow-lg shadow-slate-200/50 py-3 border-b border-slate-200/80'
-            : 'bg-white/85 backdrop-blur-md py-4 border-b border-slate-200/60'
+            : 'bg-white/85 backdrop-blur-md py-3.5 border-b border-slate-200/60'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           
           {/* Brand Logo with Layered Depth */}
-          <a href="#home" className="flex items-center gap-3.5 group">
+          <a href="#home" className="flex items-center gap-3 shrink-0 group">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-700 via-brand-600 to-rose-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/30 group-hover:scale-105 group-hover:shadow-brand-500/40 transition-all duration-300 border border-brand-400/40">
               <i className="ri-community-line text-2xl group-hover:rotate-6 transition-transform"></i>
             </div>
@@ -90,18 +90,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenPortal }) => {
           </a>
 
           {/* Desktop Navigation Links with Pill Hover Highlight */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-100/70 p-1.5 rounded-full border border-slate-200/70 backdrop-blur-sm">
+          <nav className="hidden xl:flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-full border border-slate-200/80 backdrop-blur-sm shadow-inner">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 onMouseEnter={() => setActiveHoverNav(link.name)}
                 onMouseLeave={() => setActiveHoverNav(null)}
-                className="relative px-3.5 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-950 transition-colors rounded-full flex items-center gap-1.5"
+                className="relative px-3.5 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-950 transition-colors rounded-full flex items-center gap-1.5 whitespace-nowrap select-none"
               >
                 <span>{link.name}</span>
                 {link.badge && (
-                  <span className="text-[9px] font-extrabold bg-brand-100 text-brand-700 px-1.5 py-0.2 rounded-full">
+                  <span className="text-[9px] font-extrabold bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded-full leading-none tracking-wide uppercase">
                     {link.badge}
                   </span>
                 )}
@@ -112,18 +112,36 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenPortal }) => {
             ))}
           </nav>
 
+          {/* Fallback for lg screens if between lg and xl */}
+          <nav className="hidden lg:flex xl:hidden items-center gap-0.5 bg-slate-100/80 p-1 rounded-full border border-slate-200/80 backdrop-blur-sm">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                onMouseEnter={() => setActiveHoverNav(link.name)}
+                onMouseLeave={() => setActiveHoverNav(null)}
+                className="relative px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:text-slate-950 transition-colors rounded-full flex items-center gap-1 whitespace-nowrap select-none"
+              >
+                <span>{link.name}</span>
+                {activeHoverNav === link.name && (
+                  <span className="absolute inset-0 bg-white shadow-sm rounded-full -z-10 animate-fadeIn" />
+                )}
+              </a>
+            ))}
+          </nav>
+
           {/* Action Buttons */}
-          <div className="hidden sm:flex items-center gap-2.5">
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
             <button
               onClick={onOpenPortal}
-              className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-brand-700 border border-slate-200 hover:border-brand-300 rounded-xl bg-white hover:bg-brand-50/40 transition-all duration-200 shadow-sm"
+              className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-brand-700 border border-slate-200 hover:border-brand-300 rounded-xl bg-white hover:bg-brand-50/40 transition-all duration-200 shadow-sm whitespace-nowrap"
             >
               Resident Login
             </button>
 
             <button
               onClick={onOpenDemo}
-              className="px-5 py-2.5 text-xs sm:text-sm font-extrabold text-white bg-gradient-to-r from-brand-700 via-brand-600 to-rose-500 hover:from-brand-800 hover:to-brand-600 rounded-xl shadow-lg shadow-brand-500/25 hover:shadow-xl hover:shadow-brand-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center gap-1.5 group"
+              className="px-5 py-2.5 text-xs sm:text-sm font-extrabold text-white bg-gradient-to-r from-brand-700 via-brand-600 to-rose-500 hover:from-brand-800 hover:to-brand-600 rounded-xl shadow-lg shadow-brand-500/25 hover:shadow-xl hover:shadow-brand-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap group"
             >
               <span>Get Started Free</span>
               <i className="ri-arrow-right-line text-sm group-hover:translate-x-1 transition-transform"></i>

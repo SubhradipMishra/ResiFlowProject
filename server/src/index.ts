@@ -27,13 +27,24 @@ import { ApiError } from "./utils/api-error";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-// app.use(cors({
-//     origin: process.env.CLIENT_URL || "http://localhost:5173",
-//     credentials: true,
-// }));
+// Middleware – normalise CLIENT_URL (strip trailing slash) to avoid CORS mismatch
+const allowedOrigins = [
+    (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/$/, ""),
+    "http://localhost:5173",
+    "http://localhost:3000",
+];
 
-app.use(cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (server-to-server, curl, Postman)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+            return callback(null, true);
+        }
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+}));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

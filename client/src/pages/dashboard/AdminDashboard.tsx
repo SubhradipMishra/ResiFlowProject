@@ -23,7 +23,7 @@ const AdminDashboard: React.FC = () => {
     const [buildingForm, setBuildingForm] = useState({ name: '', buildingNumber: '', totalFloors: 4, description: '' });
     const [flatForm, setFlatForm] = useState({ flatNumber: '', buildingId: '', floor: 1, type: '2BHK', area: 1200, status: 'vacant', monthlyMaintenance: 3500 });
     const [residentForm, setResidentForm] = useState({ name: '', email: '', phone: '', password: '', flatId: '', residentType: 'owner' });
-    const [noticeForm, setNoticeForm] = useState({ title: '', content: '', category: 'general', priority: 'medium', isPinned: false });
+    // const [noticeForm, setNoticeForm] = useState({ title: '', content: '', category: 'general', priority: 'medium', isPinned: false });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');

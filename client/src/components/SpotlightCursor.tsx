@@ -94,3 +94,5 @@ export const SpotlightCursor: React.FC = () => {
     </>
   );
 };
+
+export default SpotlightCursor;

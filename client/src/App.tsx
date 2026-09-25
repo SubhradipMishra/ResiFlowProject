@@ -1,134 +1,84 @@
-import React, { useState } from 'react';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { Pillars } from './components/Pillars';
-import { AboutSection } from './components/AboutSection';
-import { FeaturesSection } from './components/FeaturesSection';
-import { InteractiveSimulator } from './components/InteractiveSimulator';
-import { WhyChooseUs } from './components/WhyChooseUs';
-import { HowItWorks } from './components/HowItWorks';
-import { Testimonials } from './components/Testimonials';
-import { PricingSection } from './components/PricingSection';
-import { FAQSection } from './components/FAQSection';
-import { CallToAction } from './components/CallToAction';
-import { Footer } from './components/Footer';
+import { useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState, AppDispatch } from './redux/store';
+import { checkAuthSession } from './redux/slices/authSlice';
+import LandingPage from './pages/landing/LandingPage';
+import Login from './pages/auth/Login';
+import Dashboard from './pages/dashboard/Dashboard';
+import BuildingsPage from './pages/buildings/BuildingsPage';
+import FlatsPage from './pages/flats/FlatsPage';
+import ResidentsPage from './pages/residents/ResidentsPage';
+import StaffPage from './pages/staff/StaffPage';
+import NoticesPage from './pages/notices/NoticesPage';
+import ComplaintsPage from './pages/complaints/ComplaintsPage';
+import VisitorsPage from './pages/visitors/VisitorsPage';
+import VehiclesPage from './pages/vehicles/VehiclesPage';
+import SettingsPage from './pages/settings/SettingsPage';
+import MainLayout from './components/layout/MainLayout';
+import PlaceholderPage from './components/common/PlaceholderPage';
 
-// Components & Cursor
-import { SpotlightCursor } from './components/SpotlightCursor';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Modals
-import { DemoModal } from './components/Modals/DemoModal';
-import { PaymentModal } from './components/Modals/PaymentModal';
-import { ResidentPortalModal } from './components/Modals/ResidentPortalModal';
+function App() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
 
-export const App: React.FC = () => {
-  const [demoModalOpen, setDemoModalOpen] = useState(false);
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [portalModalOpen, setPortalModalOpen] = useState(false);
-  const [selectedPlanForDemo, setSelectedPlanForDemo] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    dispatch(checkAuthSession());
+  }, [dispatch]);
 
-  const handleOpenDemoWithPlan = (planName: string, price: string) => {
-    setSelectedPlanForDemo(`${planName} (${price})`);
-    setDemoModalOpen(true);
-  };
-
-  const handleOpenGeneralDemo = () => {
-    setSelectedPlanForDemo(undefined);
-    setDemoModalOpen(true);
-  };
-
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[#f8fafc]">
+        <div className="flex flex-col items-center">
+          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-[#0f172a]"></div>
+          <p className="mt-4 text-sm font-medium text-[#475569]">Initializing ResiFlow...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col selection:bg-brand-500 selection:text-white font-sans relative">
-      {/* Interactive Spotlight Cursor */}
-      <SpotlightCursor />
+    <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} theme="colored" />
+      <Routes>
+        {/* Public Landing Page */}
+        <Route path="/" element={<LandingPage />} />
 
-      {/* Navigation */}
-      <Navbar
-        onOpenDemo={handleOpenGeneralDemo}
-        onOpenPortal={() => setPortalModalOpen(true)}
-      />
+        {/* Auth Route */}
+        <Route 
+          path="/login" 
+          element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} 
+        />
+        
+        {/* Protected Routes */}
+        <Route element={isAuthenticated ? <MainLayout /> : <Navigate to="/login" />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          
+          {/* Sidebar Module Routes */}
+          <Route path="/buildings" element={<BuildingsPage />} />
+          <Route path="/flats" element={<FlatsPage />} />
+          <Route path="/residence" element={<BuildingsPage />} />
+          <Route path="/residents" element={<ResidentsPage />} />
+          <Route path="/staff" element={<StaffPage />} />
+          <Route path="/notices" element={<NoticesPage />} />
+          <Route path="/complaints" element={<ComplaintsPage />} />
+          <Route path="/my-vehicles" element={<VehiclesPage />} />
+          <Route path="/my-visitors" element={<VisitorsPage />} />
+          <Route path="/visitors" element={<VisitorsPage />} />
+          <Route path="/assigned-tasks" element={<ComplaintsPage />} />
+          <Route path="/admins" element={<PlaceholderPage title="Platform Administrators" description="Manage society admin accounts" />} />
+          <Route path="/reports" element={<PlaceholderPage title="System & Activity Reports" description="Society performance and security logs" />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Route>
 
-      {/* Hero Section */}
-      <Hero
-        onOpenDemo={handleOpenGeneralDemo}
-        onOpenVideo={() => scrollToSection('simulator')}
-      />
-
-      {/* 5 Quick Access Pillars */}
-      <Pillars
-        onSelectPillar={(id) => {
-          if (id === 'billing') {
-            setPaymentModalOpen(true);
-          } else {
-            scrollToSection('features');
-          }
-        }}
-      />
-
-      {/* About Section with Live Resident Status Card */}
-      <AboutSection
-        onPayNow={() => setPaymentModalOpen(true)}
-        onOpenDemo={handleOpenGeneralDemo}
-      />
-
-      {/* 6 Core Feature Grid */}
-      <FeaturesSection
-        onSelectFeature={() => scrollToSection('simulator')}
-        onExploreAll={() => scrollToSection('simulator')}
-      />
-
-      {/* Interactive Simulator Playground */}
-      <InteractiveSimulator />
-
-      {/* Why Choose Us & Story Experience */}
-      <WhyChooseUs onLearnMore={handleOpenGeneralDemo} />
-
-      {/* How It Works with Animated Curly Road Route */}
-      <HowItWorks />
-
-      {/* Testimonials with Infinite Marquee */}
-      <Testimonials />
-
-      {/* Pricing Plans */}
-      <PricingSection onSelectPlan={handleOpenDemoWithPlan} />
-
-      {/* FAQ Section */}
-      <FAQSection />
-
-      {/* Call to Action Banner */}
-      <CallToAction
-        onGetStarted={handleOpenGeneralDemo}
-        onContactSales={handleOpenGeneralDemo}
-      />
-
-      {/* Footer */}
-      <Footer />
-
-      {/* Modals */}
-      <DemoModal
-        isOpen={demoModalOpen}
-        onClose={() => setDemoModalOpen(false)}
-        defaultPlan={selectedPlanForDemo}
-      />
-
-      <PaymentModal
-        isOpen={paymentModalOpen}
-        onClose={() => setPaymentModalOpen(false)}
-      />
-
-      <ResidentPortalModal
-        isOpen={portalModalOpen}
-        onClose={() => setPortalModalOpen(false)}
-      />
-    </div>
+        {/* Fallback Catch-all */}
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} />} />
+      </Routes>
+    </>
   );
-};
+}
 
 export default App;

@@ -75,21 +75,21 @@ export const FAQSection: React.FC = () => {
   });
 
   return (
-    <section className="py-24 md:py-36 bg-[#F8FAFC] relative overflow-hidden bg-dot-pattern">
+    <section className="py-24 md:py-36 bg-[#F8FAFC] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-50 text-brand-600 border border-brand-200/70 mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
-            <span>FREQUENTLY ASKED QUESTIONS</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-white text-slate-900 border-2 border-slate-900 mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
+            <span>Frequently asked questions</span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-faded-heading">
-            Everything You Need to <span className="text-brand-gradient">Know</span>
+          <h2 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900">
+            Everything you need to know
           </h2>
 
-          <p className="mt-4 text-slate-600 text-base sm:text-lg text-faded-sub">
+          <p className="mt-4 text-slate-600 text-base sm:text-lg">
             Clear answers about security, onboarding, billing automation, and hardware integrations.
           </p>
 
@@ -102,7 +102,7 @@ export const FAQSection: React.FC = () => {
                 placeholder="Search questions (e.g., ANPR, UPI, migration, hardware)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/90 rounded-2xl text-xs sm:text-sm font-semibold text-slate-800 placeholder-slate-400 shadow-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="w-full pl-11 pr-4 py-3 bg-white border-2 border-slate-200 rounded-2xl text-xs sm:text-sm font-semibold text-slate-800 placeholder-slate-400 focus:border-rose-600 outline-none"
               />
               {searchQuery && (
                 <button
@@ -123,11 +123,10 @@ export const FAQSection: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id as any)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 flex items-center gap-1.5 ${
-                    isActive
-                      ? 'bg-slate-950 text-white shadow-md'
-                      : 'bg-white text-slate-600 border border-slate-200/80 hover:border-slate-300 hover:text-slate-950'
-                  }`}
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition-colors duration-200 flex items-center gap-1.5 ${isActive
+                    ? 'bg-rose-600 text-white'
+                    : 'bg-white text-slate-600 border-2 border-slate-200 hover:border-slate-900 hover:text-slate-950'
+                    }`}
                 >
                   <i className={cat.icon}></i>
                   <span>{cat.name}</span>
@@ -137,12 +136,12 @@ export const FAQSection: React.FC = () => {
           </div>
         </div>
 
-        {/* 2-Column Bento FAQ Layout */}
+        {/* 2-Column FAQ Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-6xl mx-auto">
-          
-          {/* Left Column: Helpdesk & Support Bento Box */}
-          <div className="lg:col-span-4 bento-card p-6 sm:p-8 space-y-6 text-left border-slate-200 shadow-xl bg-gradient-to-br from-white to-slate-50">
-            <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-2xl border border-brand-100 shadow-sm">
+
+          {/* Left Column: Helpdesk & Support Box */}
+          <div className="lg:col-span-4 rounded-[28px] border-2 border-slate-900 p-6 sm:p-8 space-y-6 text-left bg-white">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl border border-rose-100">
               <i className="ri-customer-service-2-fill"></i>
             </div>
 
@@ -156,7 +155,7 @@ export const FAQSection: React.FC = () => {
             <div className="space-y-3 pt-2">
               <a
                 href="tel:+919876543210"
-                className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-200/80 hover:border-brand-300 transition-colors shadow-sm group"
+                className="flex items-center gap-3 p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-rose-600 transition-colors group"
               >
                 <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
                   <i className="ri-phone-fill"></i>
@@ -169,9 +168,9 @@ export const FAQSection: React.FC = () => {
 
               <a
                 href="mailto:support@resiflow.com"
-                className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-200/80 hover:border-brand-300 transition-colors shadow-sm group"
+                className="flex items-center gap-3 p-3 bg-white rounded-2xl border-2 border-slate-200 hover:border-rose-600 transition-colors group"
               >
-                <div className="w-9 h-9 rounded-xl bg-rose-50 text-brand-600 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
                   <i className="ri-mail-fill"></i>
                 </div>
                 <div>
@@ -182,11 +181,11 @@ export const FAQSection: React.FC = () => {
             </div>
 
             <div className="pt-2">
-              <div className="p-3.5 bg-brand-50/60 rounded-2xl border border-brand-100/80 text-center">
-                <span className="text-[11px] font-bold text-brand-800 block">
+              <div className="p-3.5 bg-rose-50 rounded-2xl border-2 border-rose-600 text-center">
+                <span className="text-[11px] font-bold text-rose-800 block">
                   📄 Download Society Onboarding Guide
                 </span>
-                <span className="text-[10px] text-brand-600">Free PDF for RWA Management Committee</span>
+                <span className="text-[10px] text-rose-600">Free PDF for RWA Management Committee</span>
               </div>
             </div>
           </div>
@@ -194,7 +193,7 @@ export const FAQSection: React.FC = () => {
           {/* Right Column: Interactive Accordion List */}
           <div className="lg:col-span-8 space-y-4">
             {filteredFaqs.length === 0 ? (
-              <div className="bento-card p-10 text-center text-slate-500">
+              <div className="rounded-[28px] border-2 border-slate-900 bg-white p-10 text-center text-slate-500">
                 <i className="ri-search-eye-line text-4xl text-slate-300 mb-2 block"></i>
                 <div className="font-bold text-slate-700">No questions found matching "{searchQuery}"</div>
                 <button
@@ -202,7 +201,7 @@ export const FAQSection: React.FC = () => {
                     setSearchQuery('');
                     setActiveCategory('all');
                   }}
-                  className="mt-3 text-xs font-bold text-brand-600 underline"
+                  className="mt-3 text-xs font-bold text-rose-600 underline"
                 >
                   Clear search and show all FAQs
                 </button>
@@ -215,22 +214,21 @@ export const FAQSection: React.FC = () => {
                 return (
                   <div
                     key={faq.id}
-                    className={`rounded-3xl border transition-all duration-300 overflow-hidden ${
-                      isOpen
-                        ? 'bg-white border-brand-300 shadow-xl shadow-brand-500/5 ring-2 ring-brand-500/10'
-                        : 'bg-white/90 border-slate-200/80 shadow-soft-sm hover:border-slate-300'
-                    }`}
+                    className={`rounded-3xl border-2 transition-colors duration-200 overflow-hidden bg-white ${isOpen
+                      ? 'border-rose-600'
+                      : 'border-slate-200 hover:border-slate-900'
+                      }`}
                   >
                     <button
                       onClick={() => setOpenIdx(isOpen ? null : idx)}
                       className="w-full px-6 py-5 text-left flex items-start justify-between gap-4 focus:outline-none group"
                     >
                       <div className="flex items-start gap-3.5">
-                        <span className="font-mono text-xs font-bold text-brand-600 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-200/60 flex-shrink-0 mt-0.5">
+                        <span className="font-mono text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-200/60 flex-shrink-0 mt-0.5">
                           {formattedIndex}
                         </span>
                         <div>
-                          <span className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-brand-600 transition-colors block">
+                          <span className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-rose-600 transition-colors block">
                             {faq.q}
                           </span>
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1 inline-block">
@@ -240,16 +238,15 @@ export const FAQSection: React.FC = () => {
                       </div>
 
                       <div
-                        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-transform duration-300 ${
-                          isOpen ? 'bg-brand-600 text-white rotate-180 shadow-md' : 'bg-slate-100 text-slate-600'
-                        }`}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-transform duration-300 border-2 ${isOpen ? 'bg-rose-600 text-white border-rose-600 rotate-180' : 'bg-white text-slate-600 border-slate-200'
+                          }`}
                       >
                         <i className="ri-arrow-down-s-line text-xl"></i>
                       </div>
                     </button>
 
                     {isOpen && (
-                      <div className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 animate-fadeIn pl-14">
+                      <div className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t-2 border-slate-100 animate-fadeIn pl-14">
                         {faq.a}
                       </div>
                     )}
@@ -265,3 +262,5 @@ export const FAQSection: React.FC = () => {
     </section>
   );
 };
+
+export default FAQSection;

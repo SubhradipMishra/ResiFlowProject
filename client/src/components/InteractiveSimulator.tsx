@@ -68,37 +68,32 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
   };
 
   return (
-    <section id="simulator" className="py-24 md:py-36 bg-white relative overflow-hidden bg-dot-pattern">
-      {/* Radiant ambient aura */}
-      <div className="absolute top-1/2 left-10 w-96 h-96 bg-brand-50 rounded-full blur-3xl -z-10 pointer-events-none"></div>
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-sky-50 rounded-full blur-3xl -z-10 pointer-events-none"></div>
-
+    <section id="simulator" className="py-24 md:py-36 bg-[#FAF9F6] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-50 text-brand-600 border border-brand-200/70 mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
-            <span>LIVE INTERACTIVE PLAYGROUND</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-white text-slate-900 border-2 border-slate-900 mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
+            <span>Live interactive playground</span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-faded-heading">
-            Experience the <span className="text-brand-gradient">ResiFlow</span> OS Live
+          <h2 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900">
+            Experience the ResiFlow OS live
           </h2>
 
-          <p className="mt-4 text-slate-600 text-base sm:text-lg text-faded-sub">
+          <p className="mt-4 text-slate-600 text-base sm:text-lg">
             Test real-world resident, guard, and committee workflows interactively right from your browser.
           </p>
 
           {/* Floating Pill Switcher */}
-          <div className="mt-8 inline-flex flex-wrap items-center justify-center gap-1.5 p-1.5 island-capsule rounded-full max-w-2xl mx-auto">
+          <div className="mt-8 inline-flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-full border-2 border-slate-900 max-w-2xl mx-auto">
             <button
               onClick={() => setActiveTab('visitor')}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5 ${
-                activeTab === 'visitor'
-                  ? 'bg-slate-950 text-white shadow-md'
-                  : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100'
-              }`}
+              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-colors duration-200 flex items-center gap-1.5 ${activeTab === 'visitor'
+                ? 'bg-slate-900 text-white'
+                : 'text-slate-600 hover:bg-slate-100'
+                }`}
             >
               <i className="ri-qr-code-line text-base"></i>
               <span>QR Visitor Pass</span>
@@ -106,11 +101,10 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
 
             <button
               onClick={() => setActiveTab('billing')}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5 ${
-                activeTab === 'billing'
-                  ? 'bg-slate-950 text-white shadow-md'
-                  : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100'
-              }`}
+              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-colors duration-200 flex items-center gap-1.5 ${activeTab === 'billing'
+                ? 'bg-slate-900 text-white'
+                : 'text-slate-600 hover:bg-slate-100'
+                }`}
             >
               <i className="ri-calculator-line text-base"></i>
               <span>Maintenance Dues</span>
@@ -118,11 +112,10 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
 
             <button
               onClick={() => setActiveTab('amenity')}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5 ${
-                activeTab === 'amenity'
-                  ? 'bg-slate-950 text-white shadow-md'
-                  : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100'
-              }`}
+              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-colors duration-200 flex items-center gap-1.5 ${activeTab === 'amenity'
+                ? 'bg-slate-900 text-white'
+                : 'text-slate-600 hover:bg-slate-100'
+                }`}
             >
               <i className="ri-calendar-check-line text-base"></i>
               <span>Amenity Booker</span>
@@ -130,11 +123,10 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
 
             <button
               onClick={() => setActiveTab('sos')}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5 ${
-                activeTab === 'sos'
-                  ? 'bg-red-600 text-white shadow-md shadow-red-500/30'
-                  : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100'
-              }`}
+              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-colors duration-200 flex items-center gap-1.5 ${activeTab === 'sos'
+                ? 'bg-red-600 text-white'
+                : 'text-slate-600 hover:bg-slate-100'
+                }`}
             >
               <i className="ri-alarm-warning-line text-base"></i>
               <span>Emergency SOS</span>
@@ -142,14 +134,14 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
           </div>
         </div>
 
-        {/* Playground Bento Display Card */}
-        <div className="max-w-5xl mx-auto bento-card p-6 sm:p-10 border-slate-200 shadow-2xl">
-          
+        {/* Playground Display Card */}
+        <div className="max-w-5xl mx-auto rounded-[28px] border-2 border-slate-900 p-6 sm:p-10 bg-white">
+
           {/* TAB 1: VISITOR PASS GENERATOR */}
           {activeTab === 'visitor' && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
               <div className="md:col-span-6 space-y-4">
-                <div className="flex items-center gap-2 text-brand-600 font-bold text-xs uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-wider">
                   <i className="ri-shield-keyhole-line text-base"></i>
                   <span>Instant Digital Gate Pass</span>
                 </div>
@@ -169,7 +161,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                       type="text"
                       value={guestName}
                       onChange={(e) => setGuestName(e.target.value)}
-                      className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none"
+                      className="w-full px-4 py-2.5 text-sm bg-white border-2 border-slate-200 rounded-xl focus:border-rose-600 outline-none"
                     />
                   </div>
 
@@ -181,7 +173,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                       <select
                         value={guestType}
                         onChange={(e) => setGuestType(e.target.value)}
-                        className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none font-semibold"
+                        className="w-full px-3 py-2 text-xs bg-white border-2 border-slate-200 rounded-xl focus:border-rose-600 outline-none font-semibold"
                       >
                         <option>Guest / Friend</option>
                         <option>Delivery (Amazon/Swiggy)</option>
@@ -197,7 +189,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                       <select
                         value={validHours}
                         onChange={(e) => setValidHours(e.target.value)}
-                        className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none font-semibold"
+                        className="w-full px-3 py-2 text-xs bg-white border-2 border-slate-200 rounded-xl focus:border-rose-600 outline-none font-semibold"
                       >
                         <option>2 Hours</option>
                         <option>6 Hours</option>
@@ -212,7 +204,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                       onClick={() => {
                         confetti({ particleCount: 40, spread: 50, origin: { y: 0.6 } });
                       }}
-                      className="px-5 py-2.5 bg-slate-950 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5"
+                      className="px-5 py-2.5 bg-slate-900 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5"
                     >
                       <i className="ri-refresh-line"></i>
                       <span>Regenerate Pass</span>
@@ -226,8 +218,8 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
 
               {/* Digital Pass Preview Card */}
               <div className="md:col-span-6 flex justify-center">
-                <div className="w-full max-w-[290px] bg-white rounded-3xl p-6 border-2 border-dashed border-brand-200 shadow-2xl relative overflow-hidden">
-                  <div className="bg-slate-950 text-white text-center py-2 -mx-6 -mt-6 mb-4 text-[11px] font-extrabold tracking-widest uppercase">
+                <div className="w-full max-w-[290px] bg-white rounded-3xl p-6 border-2 border-dashed border-slate-900 relative overflow-hidden">
+                  <div className="bg-slate-900 text-white text-center py-2 -mx-6 -mt-6 mb-4 text-[11px] font-extrabold tracking-widest uppercase">
                     ResiFlow Gate Pass
                   </div>
 
@@ -237,8 +229,8 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                     <div className="text-xs text-slate-500 font-medium">Host: Rahul Sharma</div>
                   </div>
 
-                  <div className="my-4 flex flex-col items-center justify-center p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                    <div className="w-32 h-32 bg-white p-2 rounded-xl border flex items-center justify-center shadow-inner relative group">
+                  <div className="my-4 flex flex-col items-center justify-center p-3 bg-white rounded-2xl border-2 border-slate-200">
+                    <div className="w-32 h-32 bg-white p-2 rounded-xl border-2 border-slate-200 flex items-center justify-center relative group">
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=RESIFLOW-PASS-${encodeURIComponent(guestName)}-502`}
                         alt="Gate QR Code"
@@ -248,7 +240,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                     <span className="text-[10px] font-mono font-bold text-slate-600 mt-2">CODE: SR-2026-A502</span>
                   </div>
 
-                  <div className="space-y-1.5 text-xs border-t pt-3">
+                  <div className="space-y-1.5 text-xs border-t-2 border-slate-100 pt-3">
                     <div className="flex justify-between">
                       <span className="text-slate-400">Visitor:</span>
                       <span className="font-bold text-slate-800">{guestName || 'Guest'}</span>
@@ -271,7 +263,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
           {activeTab === 'billing' && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
               <div className="md:col-span-7 space-y-4">
-                <div className="flex items-center gap-2 text-brand-600 font-bold text-xs uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-wider">
                   <i className="ri-wallet-3-line text-base"></i>
                   <span>Automated Society Dues Engine</span>
                 </div>
@@ -282,7 +274,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                 <div className="pt-2">
                   <div className="flex justify-between text-xs font-bold text-slate-800 mb-1">
                     <span>Apartment Carpet Area</span>
-                    <span className="text-brand-600 font-extrabold">{flatSize} sq.ft</span>
+                    <span className="text-rose-600 font-extrabold">{flatSize} sq.ft</span>
                   </div>
                   <input
                     type="range"
@@ -291,7 +283,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                     step="50"
                     value={flatSize}
                     onChange={(e) => setFlatSize(Number(e.target.value))}
-                    className="w-full accent-brand-600 cursor-pointer"
+                    className="w-full accent-rose-600 cursor-pointer"
                   />
                   <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-semibold">
                     <span>1 BHK (600 sqft)</span>
@@ -301,22 +293,22 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-2">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-white p-3 rounded-2xl border border-slate-200 cursor-pointer hover:border-brand-300 transition-colors">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-white p-3 rounded-2xl border-2 border-slate-200 cursor-pointer hover:border-rose-600 transition-colors">
                     <input
                       type="checkbox"
                       checked={includeSinkingFund}
                       onChange={(e) => setIncludeSinkingFund(e.target.checked)}
-                      className="accent-brand-600 rounded"
+                      className="accent-rose-600 rounded"
                     />
                     <span>Sinking Fund (₹500)</span>
                   </label>
 
-                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-white p-3 rounded-2xl border border-slate-200 cursor-pointer hover:border-brand-300 transition-colors">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-white p-3 rounded-2xl border-2 border-slate-200 cursor-pointer hover:border-rose-600 transition-colors">
                     <input
                       type="checkbox"
                       checked={includeClubhouse}
                       onChange={(e) => setIncludeClubhouse(e.target.checked)}
-                      className="accent-brand-600 rounded"
+                      className="accent-rose-600 rounded"
                     />
                     <span>Clubhouse Pass (₹350)</span>
                   </label>
@@ -324,7 +316,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
               </div>
 
               <div className="md:col-span-5">
-                <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xl">
+                <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-900">
                   <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-3">
                     Invoice Breakdown
                   </div>
@@ -350,22 +342,22 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                       <span className="font-bold text-slate-800">₹{gst.toLocaleString()}</span>
                     </div>
 
-                    <div className="border-t border-slate-200 pt-3 mt-2 flex justify-between items-center">
+                    <div className="border-t-2 border-slate-200 pt-3 mt-2 flex justify-between items-center">
                       <span className="text-sm font-extrabold text-slate-900">Total Due</span>
-                      <span className="text-2xl font-black text-brand-600">₹{totalAmount.toLocaleString()}</span>
+                      <span className="text-2xl font-black text-rose-600">₹{totalAmount.toLocaleString()}</span>
                     </div>
                   </div>
 
                   <div className="mt-5">
                     {paymentSuccess ? (
-                      <div className="p-3 bg-emerald-50 text-emerald-700 rounded-2xl text-center text-xs font-bold border border-emerald-200 flex items-center justify-center gap-1.5 animate-bounce">
+                      <div className="p-3 bg-emerald-50 text-emerald-700 rounded-2xl text-center text-xs font-bold border-2 border-emerald-600 flex items-center justify-center gap-1.5">
                         <i className="ri-checkbox-circle-fill text-base"></i>
                         <span>Payment Received! Receipt Generated</span>
                       </div>
                     ) : (
                       <button
                         onClick={handleSimulatePayment}
-                        className="w-full py-3 bg-slate-950 hover:bg-brand-600 text-white font-bold text-xs rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3 bg-slate-900 hover:bg-rose-600 text-white font-bold text-xs rounded-2xl transition-colors flex items-center justify-center gap-2"
                       >
                         <i className="ri-secure-payment-line text-base"></i>
                         <span>Simulate 1-Click UPI Payment</span>
@@ -391,7 +383,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                   <select
                     value={selectedAmenity}
                     onChange={(e) => setSelectedAmenity(e.target.value)}
-                    className="px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl font-bold text-slate-900 outline-none shadow-sm"
+                    className="px-3.5 py-2 text-xs bg-white border-2 border-slate-200 rounded-xl font-bold text-slate-900 outline-none"
                   >
                     <option>Tennis Court</option>
                     <option>Swimming Pool</option>
@@ -404,17 +396,16 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
                 {[
-                  { time: '06:00 AM - 07:00 AM', status: 'Booked', color: 'bg-slate-100 text-slate-400 cursor-not-allowed' },
-                  { time: '07:00 AM - 08:00 AM', status: 'Available', color: 'bg-white hover:border-brand-500 cursor-pointer' },
-                  { time: '05:00 PM - 06:00 PM', status: 'Booked', color: 'bg-slate-100 text-slate-400 cursor-not-allowed' },
-                  { time: '06:00 PM - 07:00 PM', status: 'Available', color: 'bg-white hover:border-brand-500 cursor-pointer ring-2 ring-brand-500/20' },
+                  { time: '06:00 AM - 07:00 AM', status: 'Booked', color: 'bg-slate-50 text-slate-400 cursor-not-allowed border-slate-200' },
+                  { time: '07:00 AM - 08:00 AM', status: 'Available', color: 'bg-white hover:border-rose-600 cursor-pointer border-slate-200' },
+                  { time: '05:00 PM - 06:00 PM', status: 'Booked', color: 'bg-slate-50 text-slate-400 cursor-not-allowed border-slate-200' },
+                  { time: '06:00 PM - 07:00 PM', status: 'Available', color: 'bg-white hover:border-rose-600 cursor-pointer border-slate-200' },
                 ].map((slot, idx) => (
                   <div
                     key={idx}
                     onClick={() => slot.status === 'Available' && setSelectedSlot(slot.time)}
-                    className={`p-4 rounded-2xl border text-center transition-all ${slot.color} ${
-                      selectedSlot === slot.time && slot.status === 'Available' ? 'border-brand-500 bg-brand-50/50' : 'border-slate-200'
-                    }`}
+                    className={`p-4 rounded-2xl border-2 text-center transition-colors ${slot.color} ${selectedSlot === slot.time && slot.status === 'Available' ? 'border-rose-600 bg-rose-50' : ''
+                      }`}
                   >
                     <div className="text-xs font-extrabold text-slate-800">{slot.time}</div>
                     <div className={`text-[10px] font-bold mt-1 ${slot.status === 'Available' ? 'text-emerald-600' : 'text-slate-400'}`}>
@@ -424,20 +415,20 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
                 ))}
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t-2 border-slate-200">
                 <div className="text-xs text-slate-600">
                   Selected: <span className="font-bold text-slate-900">{selectedAmenity}</span> on <span className="font-bold text-slate-900">{selectedSlot}</span>
                 </div>
 
                 {bookingConfirmed ? (
-                  <div className="px-6 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold border border-emerald-200 flex items-center gap-1.5">
+                  <div className="px-6 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold border-2 border-emerald-600 flex items-center gap-1.5">
                     <i className="ri-checkbox-circle-fill text-base"></i>
                     <span>Slot Confirmed! Pass sent to WhatsApp</span>
                   </div>
                 ) : (
                   <button
                     onClick={handleAmenityBooking}
-                    className="px-8 py-3 bg-slate-950 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-lg transition-all"
+                    className="px-8 py-3 bg-slate-900 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition-colors"
                   >
                     Reserve Selected Slot
                   </button>
@@ -449,7 +440,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
           {/* TAB 4: SOS SIMULATOR */}
           {activeTab === 'sos' && (
             <div className="text-center max-w-lg mx-auto space-y-5 py-6">
-              <div className="w-16 h-16 rounded-3xl bg-red-100 text-red-600 flex items-center justify-center text-3xl mx-auto shadow-xl shadow-red-200">
+              <div className="w-16 h-16 rounded-3xl bg-white text-red-600 border-2 border-red-600 flex items-center justify-center text-3xl mx-auto">
                 <i className="ri-alarm-warning-fill animate-pulse"></i>
               </div>
 
@@ -461,7 +452,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
               </div>
 
               {sosActive ? (
-                <div className="p-5 bg-red-600 text-white rounded-2xl font-bold text-sm shadow-2xl shadow-red-600/40 animate-pulse flex flex-col items-center gap-1">
+                <div className="p-5 bg-red-600 text-white rounded-2xl font-bold text-sm animate-pulse flex flex-col items-center gap-1">
                   <div className="text-base font-extrabold">🚨 EMERGENCY DISPATCH ACTIVE!</div>
                   <div className="text-xs font-normal text-red-100">
                     Main Gate Security & 3 on-duty guards alerted for Flat A-502. Guard arriving in ~90s.
@@ -470,7 +461,7 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
               ) : (
                 <button
                   onClick={triggerSOS}
-                  className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-extrabold text-sm rounded-2xl shadow-xl shadow-red-600/30 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 mx-auto"
+                  className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-extrabold text-sm rounded-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 mx-auto"
                 >
                   <i className="ri-alarm-warning-line text-lg"></i>
                   <span>Test Emergency SOS Trigger</span>
@@ -485,3 +476,5 @@ export const InteractiveSimulator: React.FC<InteractiveSimulatorProps> = () => {
     </section>
   );
 };
+
+export default InteractiveSimulator;

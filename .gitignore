@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 dist/
+build/
 dist-ssr/
 *.local
 
@@ -17,6 +18,9 @@ lerna-debug.log*
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
+.env.test
 
 # Editor & OS
 .vscode/*
@@ -29,3 +33,11 @@ lerna-debug.log*
 *.sln
 *.sw?
 Thumbs.db
+
+# Project Specific
+client/node_modules/
+client/dist/
+client/build/
+server/node_modules/
+server/dist/
+server/build/

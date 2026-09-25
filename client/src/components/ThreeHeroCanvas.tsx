@@ -179,3 +179,5 @@ export const ThreeHeroCanvas: React.FC = () => {
     />
   );
 };
+
+export default ThreeHeroCanvas;

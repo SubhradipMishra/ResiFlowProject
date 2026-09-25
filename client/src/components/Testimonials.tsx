@@ -144,10 +144,10 @@ export const Testimonials: React.FC = () => {
 
   // Helper card component
   const ReviewCard = ({ item }: { item: (typeof column1)[0] }) => (
-    <div className="bento-card p-6 sm:p-7 shadow-lg border-slate-200/90 text-left transition-all duration-300 hover:border-brand-300 hover:shadow-2xl hover:scale-[1.02] bg-white/90 backdrop-blur-xl mb-5 group cursor-default">
+    <div className="rounded-2xl border-2 border-slate-200 hover:border-rose-600 p-6 sm:p-7 text-left transition-colors duration-200 bg-white mb-5 group cursor-default">
       {/* Top Tag & Rating */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[10px] font-extrabold uppercase tracking-wider text-brand-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200/60">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200/60">
           {item.tag}
         </span>
         <div className="flex items-center gap-0.5 text-amber-500 text-xs">
@@ -163,21 +163,21 @@ export const Testimonials: React.FC = () => {
       </p>
 
       {/* User Info */}
-      <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-3">
+      <div className="mt-5 pt-4 border-t-2 border-slate-100 flex items-center gap-3">
         <img
           src={item.avatar}
           alt={item.author}
-          className="w-10 h-10 rounded-2xl object-cover ring-2 ring-brand-100 shadow-sm flex-shrink-0"
+          className="w-10 h-10 rounded-2xl object-cover border-2 border-slate-900 flex-shrink-0"
         />
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
               {item.author}
             </h4>
-            <i className="ri-verified-badge-fill text-brand-600 text-xs flex-shrink-0"></i>
+            <i className="ri-verified-badge-fill text-rose-600 text-xs flex-shrink-0"></i>
           </div>
           <p className="text-[11px] text-slate-500 font-medium truncate">
-            {item.role}, <span className="text-brand-700 font-semibold">{item.society}</span>
+            {item.role}, <span className="text-rose-700 font-semibold">{item.society}</span>
           </p>
         </div>
       </div>
@@ -185,37 +185,37 @@ export const Testimonials: React.FC = () => {
   );
 
   return (
-    <section className="py-24 md:py-36 bg-[#F8FAFC] relative overflow-hidden bg-dot-pattern">
+    <section className="py-24 md:py-36 bg-[#F8FAFC] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-50 text-brand-600 border border-brand-200/70 mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
-            <span>VERIFIED RESIDENT & RWA REVIEWS</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-white text-slate-900 border-2 border-slate-900 mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
+            <span>Verified resident & RWA reviews</span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-faded-heading">
-            Loved by Over <span className="text-brand-gradient">50,000+ Residents</span>
+          <h2 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900">
+            Loved by over 50,000+ residents
           </h2>
 
-          <p className="mt-4 text-slate-600 text-base sm:text-lg text-faded-sub">
+          <p className="mt-4 text-slate-600 text-base sm:text-lg">
             Real feedback from society presidents, treasurers, and resident families across India.
           </p>
         </div>
 
         {/* Continuous Up-Down Moving Marquee Stage with Faded Screen Top/Bottom Masks */}
         <div className="relative h-[620px] sm:h-[680px] overflow-hidden rounded-[36px] p-2">
-          
+
           {/* Top Faded Gradient Screen Mask */}
           <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#F8FAFC] via-[#F8FAFC]/90 to-transparent z-20 pointer-events-none" />
-          
+
           {/* Bottom Faded Gradient Screen Mask */}
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/90 to-transparent z-20 pointer-events-none" />
 
           {/* 3 Columns Grid Container */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-full">
-            
+
             {/* Column 1: Moves UP */}
             <div className="overflow-hidden relative h-full">
               <div className="animate-marquee-up hover:[animation-play-state:paused] space-y-0">
@@ -266,3 +266,5 @@ export const Testimonials: React.FC = () => {
     </section>
   );
 };
+
+export default Testimonials;

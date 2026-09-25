@@ -127,3 +127,5 @@ export const Pillars: React.FC<PillarsProps> = ({ onSelectPillar }) => {
     </section>
   );
 };
+
+export default Pillars;

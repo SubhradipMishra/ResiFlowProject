@@ -1,123 +1,81 @@
-# ResiFlow — Next-Generation Smart Residential & Society Management Platform
+# Smart Residence (ResiFlow)
 
-![ResiFlow Banner](https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=80)
+A modern, flat-design residential society management system with an ultra-premium, ink-bordered user interface.
 
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Three.js](https://img.shields.io/badge/Three.js-WebGL-000000?logo=three.js&logoColor=white)](https://threejs.org/)
-[![Vite](https://img.shields.io/badge/Vite-8.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+## 🏗️ Architecture
 
-**ResiFlow** is a modern, ultra-premium society ERP and residential security platform designed for gated communities, apartment associations (RWA), high-rise towers, and residential townships.
+This project uses a full-stack MERN architecture (MongoDB, Express, React, Node.js) split into two main workspaces:
+- **/client**: React frontend powered by Vite, utilizing Redux for state management, React Router for navigation, and Tailwind CSS for styling. It features a bold, high-contrast flat design language.
+- **/server**: Node.js/Express backend connected to a MongoDB database via Mongoose, providing RESTful APIs for the application.
 
----
-
-## 🌟 Key Features
-
-- **3D Interactive Visualizer**: Dynamic Three.js WebGL particle environment and interactive telemetry dock.
-- **Spotlight Magnetic Cursor**: Custom 60fps radial spotlight with smooth magnetic hover animations.
-- **Interactive Simulator**:
-  - Instant Visitor Pass generation with dynamic QR code rendering and download.
-  - Interactive Society Maintenance dues calculator with 1-click UPI simulation.
-  - Amenity slot booking (Clubhouse, Tennis Court, Banquet).
-  - 1-Tap Emergency SOS Security siren simulation.
-- **24-Hour Storytelling Simulator**: Interactive time-travel tabs illustrating security and resident operations across morning rush, midday deliveries, evening clubhouse hours, and late-night perimeter patrols.
-- **Dynamic "How It Works" Route**: Scroll-driven SVG road drawing and checkpoint activations.
-- **Infinite Testimonial Marquee**: Multi-directional vertical review columns with screen-edge fade masks.
-- **Transparent Society Pricing**: 20% annual discount toggle, per-flat cost estimator, and expandable feature comparison drawer.
-- **Interactive Modals**:
-  - Direct UPI payment modal with automated canvas confetti celebration.
-  - Resident Portal multi-role login interface (Resident / Guard / Admin).
-  - Schedule Live Demo booking flow.
-
----
-
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
-- **Node.js**: v18.0.0 or higher
-- **npm**: v9.0.0 or higher
+- Node.js (v18.0.0 or higher)
+- npm (v9.0.0 or higher)
+- MongoDB instance (local or Atlas)
 
-### Local Development
+### Environment Variables
 
-1. **Clone the repository:**
+#### Server (`server/.env`)
+Create a `.env` file in the `server` directory:
+```
+PORT=5000
+DB_URL=mongodb://127.0.0.1:27017/smart-residence
+JWT_SECRET=your_super_secret_jwt_key
+```
+
+#### Client (`client/.env`)
+Create a `.env` file in the `client` directory:
+```
+VITE_API_URL=http://localhost:5000/api
+```
+
+### Installation
+
+1. **Install Server Dependencies:**
    ```bash
-   git clone https://github.com/SubhradipMishra/ResiFlowProject.git
-   cd ResiFlowProject/client
+   cd server
+   npm install
    ```
-
-2. **Install dependencies:**
+2. **Install Client Dependencies:**
    ```bash
+   cd client
    npm install
    ```
 
-3. **Start the local Vite dev server:**
+### Running the App Locally
+
+1. **Start the backend server:**
    ```bash
+   cd server
    npm run dev
    ```
+   *Runs on port 5000 by default and connects to MongoDB.*
 
-4. Open [http://localhost:5173](http://localhost:5173) in your browser.
+2. **Start the frontend application:**
+   ```bash
+   cd client
+   npm run dev
+   ```
+   *Runs on port 5173 by default.*
 
----
+## 🌟 Key Features
 
-## 🛠️ Production Build & Deployment
+- **Resident Dashboard**: Manage visitors, notices, complaints, and view dues.
+- **Admin Panel**: Complete control over society management, user roles, and announcements.
+- **Flat Ink-Style UI**: Unique aesthetic avoiding gradients/shadows in favor of high-contrast solid colors and thick borders.
+- **Authentication**: JWT-based secure authentication.
+- **Interactive Modals**: Seamless user experience for interactions.
 
-To compile and produce optimized static assets for production:
+## 🛠️ Utilities
 
+### Seeding an Admin User
+To seed a super admin user for initial login and system setup:
 ```bash
-cd client
-npm run build
+cd server
+npm run seed:admin
 ```
-
-The optimized production bundle will be generated in `client/dist/`.
-
-### Deployment Options
-
-- **Vercel**: Connect this GitHub repository and set the root directory to `client` or configure build command `npm run build` with output directory `dist`.
-- **Netlify**: Set base directory `client`, build command `npm run build`, and publish directory `client/dist`.
-- **GitHub Pages / AWS S3 + CloudFront**: Deploy the static contents of `client/dist/`.
-
----
-
-## 🏗️ Project Structure
-
-```
-SmartResidence/
-├── .gitignore
-├── README.md
-└── client/
-    ├── index.html
-    ├── package.json
-    ├── vite.config.ts
-    ├── tsconfig.json
-    ├── src/
-    │   ├── App.tsx
-    │   ├── main.tsx
-    │   ├── index.css
-    │   └── components/
-    │       ├── Navbar.tsx
-    │       ├── Hero.tsx
-    │       ├── ThreeHeroCanvas.tsx
-    │       ├── SpotlightCursor.tsx
-    │       ├── Pillars.tsx
-    │       ├── AboutSection.tsx
-    │       ├── FeaturesSection.tsx
-    │       ├── InteractiveSimulator.tsx
-    │       ├── WhyChooseUs.tsx
-    │       ├── HowItWorks.tsx
-    │       ├── Testimonials.tsx
-    │       ├── PricingSection.tsx
-    │       ├── CallToAction.tsx
-    │       ├── FAQSection.tsx
-    │       ├── Footer.tsx
-    │       └── Modals/
-    │           ├── PaymentModal.tsx
-    │           ├── DemoModal.tsx
-    │           └── ResidentPortalModal.tsx
-```
-
----
 
 ## 📄 License
 This project is licensed under the MIT License.

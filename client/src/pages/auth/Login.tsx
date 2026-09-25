@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCredentials, setRequiresOtp, clearTempAuth, setLoading, setError } from '../../redux/slices/authSlice';
+import { setCredentials, setRequiresOtp, clearTempAuth, setLoading } from '../../redux/slices/authSlice';
 import type { RootState } from '../../redux/store';
 import api from '../../services/api';
-import { Building, ArrowRight, ShieldCheck, Activity, Users, ArrowLeft } from 'lucide-react';
+import { Building, ArrowRight, ShieldCheck, Activity, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -17,13 +17,6 @@ const Login = () => {
     const [role, setRole] = useState<'resident' | 'admin' | 'staff' | 'super-admin'>('resident');
     const [localError, setLocalError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const getEndpointBase = () => {
-        if (role === 'admin') return '/admin';
-        if (role === 'staff') return '/staff';
-        if (role === 'super-admin') return '/super-admin';
-        return '/resident';
-    };
 
     const handleLoginStep1 = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, RefreshCw, AlertCircle, CheckCircle2, Search, Mail, Phone, Home, BadgeCheck, Edit3, Trash2 } from 'lucide-react';
+import { Users, Plus, RefreshCw, AlertCircle, CheckCircle2, Search, Mail, Phone, Home, Edit3, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 
 const ResidentsPage: React.FC = () => {

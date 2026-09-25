@@ -144,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenPortal }) => {
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-xs font-extrabold text-slate-900 leading-none">{user.name}</span>
-                  <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider mt-0.5">{user.role.replace('_', ' ')}</span>
+                  <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider mt-0.5">{user.role?.replace('_', ' ')}</span>
                 </div>
                 <button
                   onClick={() => navigate('/dashboard')}

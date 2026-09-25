@@ -7,16 +7,13 @@ import {
     KeyRound, 
     CheckCircle, 
     UserPlus, 
-    Plus, 
     X, 
     Mail, 
     Lock, 
     Phone, 
     User, 
     AlertCircle, 
-    MapPin, 
     Building2,
-    Calendar,
     Link2
 } from 'lucide-react';
 import api from '../../services/api';

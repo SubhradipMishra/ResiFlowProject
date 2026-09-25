@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Home, Users, ShieldCheck, AlertCircle, Bell, Plus, RefreshCw, X, CheckCircle2, Trash2, Edit3, ShieldAlert } from 'lucide-react';
+import { Building2, Users, ShieldCheck, AlertCircle, Bell, Plus, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
 
@@ -23,7 +23,6 @@ const AdminDashboard: React.FC = () => {
     const [buildingForm, setBuildingForm] = useState({ name: '', buildingNumber: '', totalFloors: 4, description: '' });
     const [flatForm, setFlatForm] = useState({ flatNumber: '', buildingId: '', floor: 1, type: '2BHK', area: 1200, status: 'vacant', monthlyMaintenance: 3500 });
     const [residentForm, setResidentForm] = useState({ name: '', email: '', phone: '', password: '', flatId: '', residentType: 'owner' });
-    const [staffForm, setStaffForm] = useState({ name: '', phone: '', employeeId: '', department: 'security', role: 'security_guard', email: '', password: '' });
     const [noticeForm, setNoticeForm] = useState({ title: '', content: '', category: 'general', priority: 'medium', isPinned: false });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -137,48 +136,6 @@ const AdminDashboard: React.FC = () => {
             }
         } catch (err: any) {
             const msg = err.response?.data?.message || 'Failed to onboard resident.';
-            toast.error(msg);
-            setErrorMsg(msg);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleCreateStaff = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setErrorMsg('');
-        setIsSubmitting(true);
-        try {
-            const res = await api.post('/staff', staffForm);
-            if (res.data?.success) {
-                toast.success('Staff member onboarded successfully!');
-                setSuccessMsg('Staff member onboarded successfully!');
-                loadData();
-                setTimeout(resetForms, 1000);
-            }
-        } catch (err: any) {
-            const msg = err.response?.data?.message || 'Failed to onboard staff.';
-            toast.error(msg);
-            setErrorMsg(msg);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleCreateNotice = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setErrorMsg('');
-        setIsSubmitting(true);
-        try {
-            const res = await api.post('/notice', noticeForm);
-            if (res.data?.success) {
-                toast.success('Notice broadcasted to society feed!');
-                setSuccessMsg('Announcement published to society feed!');
-                loadData();
-                setTimeout(resetForms, 1000);
-            }
-        } catch (err: any) {
-            const msg = err.response?.data?.message || 'Failed to broadcast notice.';
             toast.error(msg);
             setErrorMsg(msg);
         } finally {

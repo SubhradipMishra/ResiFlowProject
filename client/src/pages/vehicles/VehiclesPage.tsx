@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Car, Plus, RefreshCw, AlertCircle, CheckCircle2, X, Search, ShieldCheck, Tag } from 'lucide-react';
+import { Car, Plus, RefreshCw, AlertCircle, CheckCircle2, X, ShieldCheck } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../redux/store';
 import api from '../../services/api';

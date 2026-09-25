@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Plus, RefreshCw, CheckCircle2, AlertCircle, X, Edit3, Trash2 } from 'lucide-react';
+import { Building2, Plus, RefreshCw, CheckCircle2, AlertCircle, Edit3, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 
 const BuildingsPage: React.FC = () => {

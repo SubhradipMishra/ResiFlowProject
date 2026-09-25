@@ -221,7 +221,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onSelectPlan }) 
                 {/* CTA Action Button */}
                 <div>
                   <button
-                    onClick={() => onSelectPlan(plan.name, displayPrice)}
+                    onClick={() => onSelectPlan?.(plan.name, displayPrice)}
                     className={`w-full py-3.5 rounded-2xl text-xs sm:text-sm font-extrabold transition-colors duration-200 text-center ${plan.ctaStyle}`}
                   >
                     {plan.cta}

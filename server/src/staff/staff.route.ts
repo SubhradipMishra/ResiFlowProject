@@ -8,8 +8,10 @@ import {
     VerifyOtpStaff,
     LogoutStaff,
     GetStaffDashboard,
+    UpdateStaffAvailability,
+    GetStaffSchedule,
 } from "./staff.controller";
-import { AdminGuard, StaffGuard } from "../middleware/gaurd.middleware";
+import { AdminGuard, StaffGuard, AdminStaffGuard } from "../middleware/gaurd.middleware";
 
 const StaffRouter = Router();
 
@@ -20,6 +22,10 @@ StaffRouter.post("/logout", LogoutStaff);
 
 // Staff Dashboard
 StaffRouter.get("/dashboard", StaffGuard, GetStaffDashboard);
+
+// Staff Availability & Schedule
+StaffRouter.patch("/:id/availability", AdminStaffGuard, UpdateStaffAvailability);
+StaffRouter.get("/:id/schedule", AdminStaffGuard, GetStaffSchedule);
 
 // Admin Management Routes
 StaffRouter.post("/", AdminGuard, CreateStaff);

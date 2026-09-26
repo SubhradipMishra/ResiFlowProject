@@ -110,6 +110,59 @@ const ComplaintSchema = new Schema(
             default: null,
         },
 
+        // AI Intelligence Fields
+        aiAnalysis: {
+            rawSummary: { type: String, default: null },
+            suggestedCategory: { type: String, default: null },
+            suggestedPriority: { type: String, default: null },
+            requiredSkill: { type: String, default: null },
+            suggestedDepartment: { type: String, default: null },
+            reasoning: { type: String, default: null },
+            estimatedDurationHours: { type: Number, default: 1 },
+            analyzedAt: { type: Date, default: null },
+        },
+
+        // Staff Time Slot & Scheduling
+        scheduledDate: {
+            type: String,
+            default: null,
+            index: true,
+        },
+
+        scheduledSlot: {
+            startTime: { type: String, default: null },
+            endTime: { type: String, default: null },
+        },
+
+        slotId: {
+            type: Schema.Types.ObjectId,
+            ref: "StaffSlot",
+            default: null,
+        },
+
+        // Printable Offline Job Sheet
+        jobSheetNumber: {
+            type: String,
+            default: null,
+            sparse: true,
+            index: true,
+        },
+
+        jobSheetGeneratedAt: {
+            type: Date,
+            default: null,
+        },
+
+        // Cloudinary Resolution Multi-Photo Proofs
+        resolutionProof: {
+            signedFormUrl: { type: String, default: null },
+            resolvedWorkUrl: { type: String, default: null },
+            staffProofUrl: { type: String, default: null },
+            uploadedAt: { type: Date, default: null },
+            verifiedByResident: { type: Boolean, default: false },
+            residentFeedback: { type: String, default: null },
+        },
+
         resolutionNote: {
             type: String,
             trim: true,

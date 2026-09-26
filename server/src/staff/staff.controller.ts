@@ -223,6 +223,74 @@ export const LogoutStaff = asyncHandler(async (req: Request, res: Response) => {
     return res.status(200).json(new ApiResponse(200, null, "Logged out successfully"));
 });
 
+// Staff/Admin Action: Update Availability Status & Working Hours
+export const UpdateStaffAvailability = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { id } = req.params;
+    const targetStaffId = id || req.user?.id;
+    const { availabilityStatus, workingDays, workingHours, slotDurationMinutes } = req.body;
+
+    const staff = await StaffModel.findById(targetStaffId);
+    if (!staff) {
+        throw new ApiError(404, "Staff not found");
+    }
+
+    if (availabilityStatus) staff.availabilityStatus = availabilityStatus;
+    if (workingDays) staff.workingDays = workingDays;
+    if (workingHours) staff.workingHours = workingHours;
+    if (slotDurationMinutes) staff.slotDurationMinutes = slotDurationMinutes;
+
+    await staff.save();
+
+    return res.status(200).json(new ApiResponse(200, staff, "Staff availability and schedule updated successfully"));
+});
+
+// Admin/Staff Action: Get Staff Day Schedule & Slots
+export const GetStaffSchedule = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { id } = req.params;
+    const { date } = req.query;
+    const targetDate = (date as string) || new Date().toISOString().split("T")[0];
+
+    const StaffSlotModel = (await import("./staff-slot.model")).default;
+    const staff = await StaffModel.findById(id);
+    if (!staff) {
+        throw new ApiError(404, "Staff not found");
+    }
+
+    const bookedSlots = await StaffSlotModel.find({
+        staff: id,
+        date: targetDate,
+    }).populate("complaint", "title category priority status flat");
+
+    const { generateSlotsForStaff } = await import("./staff-scheduling.service");
+    const allSlots = generateSlotsForStaff(
+        staff.workingHours?.start || "09:00",
+        staff.workingHours?.end || "18:00",
+        staff.slotDurationMinutes || 120
+    );
+
+    const schedule = allSlots.map((slot) => {
+        const booking = bookedSlots.find((b) => b.startTime === slot.startTime && b.endTime === slot.endTime);
+        return {
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            isBooked: !!booking,
+            bookingDetails: booking || null,
+        };
+    });
+
+    return res.status(200).json(new ApiResponse(200, {
+        staff: {
+            id: staff._id,
+            name: staff.name,
+            role: staff.role,
+            availabilityStatus: staff.availabilityStatus,
+            workingHours: staff.workingHours,
+        },
+        date: targetDate,
+        schedule,
+    }, "Staff schedule fetched successfully"));
+});
+
 // Staff Dashboard Stats
 export const GetStaffDashboard = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const staffId = req.user?.id;
@@ -266,3 +334,5 @@ export const GetStaffDashboard = asyncHandler(async (req: AuthenticatedRequest, 
         }, "Staff dashboard fetched")
     );
 });
+
+

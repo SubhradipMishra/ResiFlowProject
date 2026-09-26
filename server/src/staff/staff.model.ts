@@ -125,6 +125,41 @@ const StaffSchema = new Schema(
             index: true,
         },
 
+        availabilityStatus: {
+            type: String,
+            enum: ["available", "busy", "on_break", "on_leave", "off_duty"],
+            default: "available",
+            index: true,
+        },
+
+        workingDays: {
+            type: [String],
+            enum: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+            default: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
+        },
+
+        workingHours: {
+            start: {
+                type: String,
+                default: "09:00",
+            },
+            end: {
+                type: String,
+                default: "18:00",
+            },
+        },
+
+        slotDurationMinutes: {
+            type: Number,
+            default: 120, // 2-hour slots
+        },
+
+        activeTasksCount: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+
         isVerified: {
             type: Boolean,
             default: false,

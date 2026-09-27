@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Users, ShieldCheck, AlertCircle, Bell, Plus, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Building2, Users, ShieldCheck, AlertCircle, Bell, Plus, RefreshCw, CheckCircle2, X, FileText } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
 
@@ -23,7 +23,7 @@ const AdminDashboard: React.FC = () => {
     const [buildingForm, setBuildingForm] = useState({ name: '', buildingNumber: '', totalFloors: 4, description: '' });
     const [flatForm, setFlatForm] = useState({ flatNumber: '', buildingId: '', floor: 1, type: '2BHK', area: 1200, status: 'vacant', monthlyMaintenance: 3500 });
     const [residentForm, setResidentForm] = useState({ name: '', email: '', phone: '', password: '', flatId: '', residentType: 'owner' });
-    // const [noticeForm, setNoticeForm] = useState({ title: '', content: '', category: 'general', priority: 'medium', isPinned: false });
+    const [noticeForm, setNoticeForm] = useState({ title: '', content: '', category: 'general', priority: 'medium', isPinned: false });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
@@ -77,6 +77,12 @@ const AdminDashboard: React.FC = () => {
         setErrorMsg('');
         setSuccessMsg('');
         setActiveModal(null);
+    };
+
+    const openModal = (modal: typeof activeModal) => {
+        setErrorMsg('');
+        setSuccessMsg('');
+        setActiveModal(modal);
     };
 
     // Submissions
@@ -143,60 +149,135 @@ const AdminDashboard: React.FC = () => {
         }
     };
 
-    return (
-        <div className="space-y-8 animate-fadeIn">
-            {/* Pure White + Raspberry Header Banner */}
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
-                <div className="absolute right-0 top-0 w-80 h-80 bg-rose-500/5 rounded-bl-full pointer-events-none" />
-                <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-rose-50 text-[#e11d48] rounded-full text-xs font-bold uppercase tracking-wider mb-3 border border-rose-200/70">
-                        <Building2 className="w-4 h-4" /> Society Administration Workspace
+    const handleBroadcastNotice = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setErrorMsg('');
+        setIsSubmitting(true);
+        try {
+            const res = await api.post('/notice', noticeForm);
+            if (res.data?.success) {
+                toast.success('Notice broadcast to all residents!');
+                setSuccessMsg('Notice broadcast successfully!');
+                setNoticeForm({ title: '', content: '', category: 'general', priority: 'medium', isPinned: false });
+                loadData();
+                setTimeout(resetForms, 1200);
+            }
+        } catch (err: any) {
+            const msg = err.response?.data?.message || 'Failed to broadcast notice.';
+            toast.error(msg);
+            setErrorMsg(msg);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const inputClass = "w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm font-semibold focus:outline-none focus:border-slate-900 transition-colors bg-white";
+    const labelClass = "block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5";
+
+    const ModalWrapper: React.FC<{ title: string; subtitle: string; onClose: () => void; children: React.ReactNode }> = ({ title, subtitle, onClose, children }) => (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn overflow-y-auto">
+            <div className="bg-white rounded-[28px] max-w-md w-full p-6 sm:p-8 shadow-2xl border-2 border-slate-900 relative my-4">
+                <button
+                    onClick={onClose}
+                    className="absolute top-5 right-5 w-8 h-8 rounded-xl border-2 border-slate-900 flex items-center justify-center text-slate-900 hover:bg-slate-900 hover:text-white transition-colors"
+                >
+                    <X className="w-4 h-4" />
+                </button>
+
+                <h3 className="text-xl font-black text-slate-900 mb-0.5 pr-10">{title}</h3>
+                <p className="text-xs text-slate-500 mb-5">{subtitle}</p>
+
+                {errorMsg && (
+                    <div className="mb-4 p-3 bg-rose-50 text-rose-600 text-xs font-semibold rounded-xl flex items-center gap-2 border border-rose-200">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
+                        <span>{errorMsg}</span>
                     </div>
-                    <h1 className="text-3xl sm:text-4xl font-extrabold text-[#0f172a] tracking-tight font-outfit">Residence Management Hub</h1>
-                    <p className="text-slate-500 text-sm mt-1 max-w-xl leading-relaxed">
+                )}
+                {successMsg && (
+                    <div className="mb-4 p-3 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-xl flex items-center gap-2 border border-emerald-200">
+                        <CheckCircle2 className="w-4 h-4 shrink-0" />
+                        <span>{successMsg}</span>
+                    </div>
+                )}
+
+                {children}
+            </div>
+        </div>
+    );
+
+    const FormFooter: React.FC<{ submitLabel: string; processingLabel?: string }> = ({ submitLabel, processingLabel = 'Processing...' }) => (
+        <div className="flex items-center justify-end gap-3 pt-4 border-t-2 border-slate-100 mt-4">
+            <button
+                type="button"
+                onClick={resetForms}
+                className="px-5 py-2.5 rounded-xl text-xs font-black text-slate-600 hover:bg-slate-100 transition-all border-2 border-slate-200"
+            >
+                Cancel
+            </button>
+            <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-6 py-2.5 rounded-xl text-xs font-black text-white bg-rose-600 hover:bg-rose-700 transition-all border-2 border-slate-900 shadow-sm disabled:opacity-50"
+            >
+                {isSubmitting ? processingLabel : submitLabel}
+            </button>
+        </div>
+    );
+
+    return (
+        <div className="space-y-6 animate-fadeIn max-w-6xl mx-auto">
+
+            {/* Header Banner */}
+            <div className="bg-white p-6 sm:p-8 rounded-[28px] border-2 border-slate-900 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 relative overflow-hidden shadow-sm">
+                <div className="absolute right-0 top-0 w-64 h-64 bg-rose-500/5 rounded-bl-full pointer-events-none" />
+                <div className="relative z-10">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-rose-50 text-rose-700 rounded-full text-xs font-black uppercase tracking-wider mb-3 border-2 border-slate-900">
+                        <Building2 className="w-3.5 h-3.5" /> Society Administration Workspace
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Residence Management Hub</h1>
+                    <p className="text-slate-500 text-sm mt-1.5 max-w-xl leading-relaxed">
                         Create building towers, assign flat units, onboard residents with Brevo emails, and manage society security.
                     </p>
                 </div>
-
                 <button
                     onClick={loadData}
-                    className="bg-slate-100 hover:bg-slate-200 text-[#0f172a] font-bold px-4 py-2.5 rounded-xl text-xs transition-all flex items-center gap-2 border border-slate-200 relative z-10 shadow-sm"
+                    className="bg-white hover:bg-slate-900 hover:text-white text-slate-900 font-black px-4 py-2.5 rounded-xl text-xs transition-all flex items-center gap-2 border-2 border-slate-900 relative z-10 flex-shrink-0"
                 >
                     <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Sync Metrics
                 </button>
             </div>
 
             {/* Quick Actions Toolbar */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Quick Creation Tools</h3>
+            <div className="bg-white p-5 sm:p-6 rounded-[28px] border-2 border-slate-900 shadow-sm">
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-4">Quick Creation Tools</h3>
                 <div className="flex flex-wrap gap-3">
                     <button
-                        onClick={() => { setActiveModal('building'); setErrorMsg(''); setSuccessMsg(''); }}
-                        className="bg-[#0f172a] hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all shadow-sm"
+                        onClick={() => openModal('building')}
+                        className="bg-slate-900 hover:bg-slate-800 text-white font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all border-2 border-slate-900 shadow-sm"
                     >
                         <Plus className="w-4 h-4 text-rose-400" /> Create Building Tower
                     </button>
                     <button
-                        onClick={() => { setActiveModal('flat'); setErrorMsg(''); setSuccessMsg(''); }}
-                        className="bg-[#e11d48] hover:bg-rose-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all shadow-lg shadow-rose-200"
+                        onClick={() => openModal('flat')}
+                        className="bg-rose-600 hover:bg-rose-700 text-white font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all border-2 border-slate-900 shadow-sm"
                     >
-                        <Plus className="w-4 h-4" /> Add Flat Unit (To Building)
+                        <Plus className="w-4 h-4" /> Add Flat Unit
                     </button>
                     <button
-                        onClick={() => { setActiveModal('resident'); setErrorMsg(''); setSuccessMsg(''); }}
-                        className="bg-slate-100 hover:bg-slate-200 text-[#0f172a] font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all border border-slate-200"
+                        onClick={() => openModal('resident')}
+                        className="bg-white hover:bg-slate-50 text-slate-900 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all border-2 border-slate-900"
                     >
                         <Users className="w-4 h-4 text-rose-600" /> Onboard Resident
                     </button>
                     <button
-                        onClick={() => { setActiveModal('staff'); setErrorMsg(''); setSuccessMsg(''); }}
-                        className="bg-slate-100 hover:bg-slate-200 text-[#0f172a] font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all border border-slate-200"
+                        onClick={() => openModal('staff')}
+                        className="bg-white hover:bg-slate-50 text-slate-900 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all border-2 border-slate-900"
                     >
                         <ShieldCheck className="w-4 h-4 text-emerald-600" /> Onboard Staff
                     </button>
                     <button
-                        onClick={() => { setActiveModal('notice'); setErrorMsg(''); setSuccessMsg(''); }}
-                        className="bg-slate-100 hover:bg-slate-200 text-[#0f172a] font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all border border-slate-200"
+                        onClick={() => openModal('notice')}
+                        className="bg-white hover:bg-slate-50 text-slate-900 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all border-2 border-slate-900"
                     >
                         <Bell className="w-4 h-4 text-indigo-600" /> Broadcast Notice
                     </button>
@@ -204,350 +285,428 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-rose-50 text-[#e11d48] flex items-center justify-center font-bold">
-                        <Building2 className="w-6 h-6" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white p-5 rounded-[20px] border-2 border-slate-900 shadow-sm flex items-center gap-4">
+                    <div className="h-11 w-11 rounded-xl bg-rose-600 border-2 border-slate-900 flex items-center justify-center text-white shrink-0">
+                        <Building2 className="w-5 h-5" />
                     </div>
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Towers & Flats</p>
-                        <h3 className="text-2xl font-extrabold text-[#0f172a]">{stats.buildingsCount} Towers • {stats.flatsCount} Units</h3>
-                    </div>
-                </div>
-
-                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                        <Users className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Residents</p>
-                        <h3 className="text-2xl font-extrabold text-[#0f172a]">{stats.residentsCount}</h3>
+                    <div className="min-w-0">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Towers & Flats</p>
+                        <h3 className="text-lg font-black text-slate-900 leading-tight truncate">
+                            {stats.buildingsCount} Towers · {stats.flatsCount} Units
+                        </h3>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                        <ShieldCheck className="w-6 h-6" />
+                <div className="bg-white p-5 rounded-[20px] border-2 border-slate-900 shadow-sm flex items-center gap-4">
+                    <div className="h-11 w-11 rounded-xl bg-indigo-600 border-2 border-slate-900 flex items-center justify-center text-white shrink-0">
+                        <Users className="w-5 h-5" />
                     </div>
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">On-Duty Staff</p>
-                        <h3 className="text-2xl font-extrabold text-[#0f172a]">{stats.staffCount} Personnel</h3>
+                    <div className="min-w-0">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Total Residents</p>
+                        <h3 className="text-2xl font-black text-slate-900">{stats.residentsCount}</h3>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                        <Bell className="w-6 h-6" />
+                <div className="bg-white p-5 rounded-[20px] border-2 border-slate-900 shadow-sm flex items-center gap-4">
+                    <div className="h-11 w-11 rounded-xl bg-amber-500 border-2 border-slate-900 flex items-center justify-center text-white shrink-0">
+                        <ShieldCheck className="w-5 h-5" />
                     </div>
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Notices</p>
-                        <h3 className="text-2xl font-extrabold text-[#0f172a]">{stats.noticesCount} Broadcasts</h3>
+                    <div className="min-w-0">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">On-Duty Staff</p>
+                        <h3 className="text-2xl font-black text-slate-900">{stats.staffCount} <span className="text-sm font-bold text-slate-400">Personnel</span></h3>
+                    </div>
+                </div>
+
+                <div className="bg-white p-5 rounded-[20px] border-2 border-slate-900 shadow-sm flex items-center gap-4">
+                    <div className="h-11 w-11 rounded-xl bg-emerald-600 border-2 border-slate-900 flex items-center justify-center text-white shrink-0">
+                        <Bell className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Active Notices</p>
+                        <h3 className="text-2xl font-black text-slate-900">{stats.noticesCount} <span className="text-sm font-bold text-slate-400">Broadcasts</span></h3>
                     </div>
                 </div>
             </div>
 
-            {/* Modals with PROCEED & CANCEL Buttons */}
+            {/* Secondary stats row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-white p-5 rounded-[20px] border-2 border-slate-900 shadow-sm flex items-center gap-4">
+                    <div className="h-11 w-11 rounded-xl bg-rose-50 border-2 border-slate-900 flex items-center justify-center text-rose-600 shrink-0">
+                        <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Open Complaints</p>
+                        <h3 className="text-2xl font-black text-slate-900">{stats.complaintsCount}</h3>
+                    </div>
+                </div>
+                <div className="bg-white p-5 rounded-[20px] border-2 border-slate-900 shadow-sm flex items-center gap-4">
+                    <div className="h-11 w-11 rounded-xl bg-slate-900 border-2 border-slate-900 flex items-center justify-center text-white shrink-0">
+                        <Building2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Occupancy Rate</p>
+                        <h3 className="text-2xl font-black text-slate-900">
+                            {stats.flatsCount > 0 ? Math.round((stats.residentsCount / stats.flatsCount) * 100) : 0}%
+                            <span className="text-sm font-bold text-slate-400 ml-1">Units Occupied</span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
+            {/* ========================= MODALS ========================= */}
 
             {/* 1. Create Building Modal */}
             {activeModal === 'building' && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-                    <div className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 relative">
-                        <h3 className="text-xl font-bold text-[#0f172a] mb-1">Create Building Block</h3>
-                        <p className="text-xs text-slate-500 mb-6">Register a new tower or block in your society</p>
-
-                        {errorMsg && (
-                            <div className="mb-4 p-3 bg-rose-50 text-rose-600 text-xs font-semibold rounded-xl flex items-center gap-2">
-                                <AlertCircle className="w-4 h-4 shrink-0" />
-                                <span>{errorMsg}</span>
-                            </div>
-                        )}
-                        {successMsg && (
-                            <div className="mb-4 p-3 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-xl flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 shrink-0" />
-                                <span>{successMsg}</span>
-                            </div>
-                        )}
-
-                        <form onSubmit={handleCreateBuilding} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Building Name *</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="e.g. Amber Tower"
-                                    value={buildingForm.name}
-                                    onChange={(e) => setBuildingForm({ ...buildingForm, name: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Building / Block Code *</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="e.g. Block A"
-                                    value={buildingForm.buildingNumber}
-                                    onChange={(e) => setBuildingForm({ ...buildingForm, buildingNumber: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Total Floors</label>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    value={buildingForm.totalFloors}
-                                    onChange={(e) => setBuildingForm({ ...buildingForm, totalFloors: Number(e.target.value) })}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                                <button
-                                    type="button"
-                                    onClick={resetForms}
-                                    className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all border border-slate-200"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-[#e11d48] hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 disabled:opacity-50"
-                                >
-                                    {isSubmitting ? 'Processing...' : 'Proceed & Save'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <ModalWrapper
+                    title="Create Building Block"
+                    subtitle="Register a new tower or block in your society"
+                    onClose={resetForms}
+                >
+                    <form onSubmit={handleCreateBuilding} className="space-y-4">
+                        <div>
+                            <label className={labelClass}>Building Name *</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g. Amber Tower"
+                                value={buildingForm.name}
+                                onChange={(e) => setBuildingForm({ ...buildingForm, name: e.target.value })}
+                                className={inputClass}
+                            />
+                        </div>
+                        <div>
+                            <label className={labelClass}>Building / Block Code *</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g. Block A"
+                                value={buildingForm.buildingNumber}
+                                onChange={(e) => setBuildingForm({ ...buildingForm, buildingNumber: e.target.value })}
+                                className={inputClass}
+                            />
+                        </div>
+                        <div>
+                            <label className={labelClass}>Total Floors</label>
+                            <input
+                                type="number"
+                                min="1"
+                                value={buildingForm.totalFloors}
+                                onChange={(e) => setBuildingForm({ ...buildingForm, totalFloors: Number(e.target.value) })}
+                                className={inputClass}
+                            />
+                        </div>
+                        <FormFooter submitLabel="Proceed & Save" processingLabel="Creating..." />
+                    </form>
+                </ModalWrapper>
             )}
 
             {/* 2. Create Flat Unit Modal */}
             {activeModal === 'flat' && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-                    <div className="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
-                        <h3 className="text-xl font-bold text-[#0f172a] mb-1">Add Flat Unit to Building</h3>
-                        <p className="text-xs text-slate-500 mb-6">Create flat unit and assign to existing building block</p>
-
-                        {errorMsg && (
-                            <div className="mb-4 p-3 bg-rose-50 text-rose-600 text-xs font-semibold rounded-xl flex items-center gap-2">
-                                <AlertCircle className="w-4 h-4 shrink-0" />
-                                <span>{errorMsg}</span>
-                            </div>
-                        )}
-                        {successMsg && (
-                            <div className="mb-4 p-3 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-xl flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 shrink-0" />
-                                <span>{successMsg}</span>
-                            </div>
-                        )}
-
-                        <form onSubmit={handleCreateFlat} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Building Tower *</label>
-                                    <select
-                                        required
-                                        value={flatForm.buildingId}
-                                        onChange={(e) => setFlatForm({ ...flatForm, buildingId: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                    >
-                                        <option value="">Select Building</option>
-                                        {buildings.map((b) => (
-                                            <option key={b._id} value={b._id}>{b.name} ({b.buildingNumber})</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Flat Number *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="e.g. 101 or A-302"
-                                        value={flatForm.flatNumber}
-                                        onChange={(e) => setFlatForm({ ...flatForm, flatNumber: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-3">
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Floor</label>
-                                    <input
-                                        type="number"
-                                        value={flatForm.floor}
-                                        onChange={(e) => setFlatForm({ ...flatForm, floor: Number(e.target.value) })}
-                                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Type</label>
-                                    <select
-                                        value={flatForm.type}
-                                        onChange={(e) => setFlatForm({ ...flatForm, type: e.target.value })}
-                                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                    >
-                                        <option value="1BHK">1 BHK</option>
-                                        <option value="2BHK">2 BHK</option>
-                                        <option value="3BHK">3 BHK</option>
-                                        <option value="4BHK">4 BHK</option>
-                                        <option value="penthouse">Penthouse</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Area (sqft)</label>
-                                    <input
-                                        type="number"
-                                        value={flatForm.area}
-                                        onChange={(e) => setFlatForm({ ...flatForm, area: Number(e.target.value) })}
-                                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                                <button
-                                    type="button"
-                                    onClick={resetForms}
-                                    className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all border border-slate-200"
+                <ModalWrapper
+                    title="Add Flat Unit to Building"
+                    subtitle="Create flat unit and assign to existing building block"
+                    onClose={resetForms}
+                >
+                    <form onSubmit={handleCreateFlat} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelClass}>Building Tower *</label>
+                                <select
+                                    required
+                                    value={flatForm.buildingId}
+                                    onChange={(e) => setFlatForm({ ...flatForm, buildingId: e.target.value })}
+                                    className={inputClass}
                                 >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-[#e11d48] hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 disabled:opacity-50"
-                                >
-                                    {isSubmitting ? 'Processing...' : 'Proceed & Add Flat'}
-                                </button>
+                                    <option value="">Select Building</option>
+                                    {buildings.map((b) => (
+                                        <option key={b._id} value={b._id}>{b.name} ({b.buildingNumber})</option>
+                                    ))}
+                                </select>
                             </div>
-                        </form>
-                    </div>
-                </div>
+                            <div>
+                                <label className={labelClass}>Flat Number *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. 101 or A-302"
+                                    value={flatForm.flatNumber}
+                                    onChange={(e) => setFlatForm({ ...flatForm, flatNumber: e.target.value })}
+                                    className={inputClass}
+                                />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3">
+                            <div>
+                                <label className={labelClass}>Floor</label>
+                                <input
+                                    type="number"
+                                    value={flatForm.floor}
+                                    onChange={(e) => setFlatForm({ ...flatForm, floor: Number(e.target.value) })}
+                                    className={inputClass}
+                                />
+                            </div>
+                            <div>
+                                <label className={labelClass}>Type</label>
+                                <select
+                                    value={flatForm.type}
+                                    onChange={(e) => setFlatForm({ ...flatForm, type: e.target.value })}
+                                    className={inputClass}
+                                >
+                                    <option value="1BHK">1 BHK</option>
+                                    <option value="2BHK">2 BHK</option>
+                                    <option value="3BHK">3 BHK</option>
+                                    <option value="4BHK">4 BHK</option>
+                                    <option value="penthouse">Penthouse</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className={labelClass}>Area (sqft)</label>
+                                <input
+                                    type="number"
+                                    value={flatForm.area}
+                                    onChange={(e) => setFlatForm({ ...flatForm, area: Number(e.target.value) })}
+                                    className={inputClass}
+                                />
+                            </div>
+                        </div>
+                        <FormFooter submitLabel="Proceed & Add Flat" processingLabel="Processing..." />
+                    </form>
+                </ModalWrapper>
             )}
 
             {/* 3. Onboard Resident Modal */}
             {activeModal === 'resident' && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-                    <div className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
-                        <h3 className="text-xl font-bold text-[#0f172a] mb-1">Onboard Resident</h3>
-                        <p className="text-xs text-slate-500 mb-6">Assign flat and send login credentials via Brevo email</p>
-
-                        {errorMsg && (
-                            <div className="mb-4 p-3 bg-rose-50 text-rose-600 text-xs font-semibold rounded-xl flex items-center gap-2">
-                                <AlertCircle className="w-4 h-4 shrink-0" />
-                                <span>{errorMsg}</span>
-                            </div>
-                        )}
-                        {successMsg && (
-                            <div className="mb-4 p-3 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-xl flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 shrink-0" />
-                                <span>{successMsg}</span>
-                            </div>
-                        )}
-
-                        <form onSubmit={handleCreateResident} className="space-y-4">
+                <ModalWrapper
+                    title="Onboard Resident"
+                    subtitle="Assign flat and send login credentials via Brevo email"
+                    onClose={resetForms}
+                >
+                    <form onSubmit={handleCreateResident} className="space-y-4">
+                        <div>
+                            <label className={labelClass}>Full Name *</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g. Rahul Sharma"
+                                value={residentForm.name}
+                                onChange={(e) => setResidentForm({ ...residentForm, name: e.target.value })}
+                                className={inputClass}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Full Name *</label>
+                                <label className={labelClass}>Email *</label>
+                                <input
+                                    type="email"
+                                    required
+                                    placeholder="rahul@gmail.com"
+                                    value={residentForm.email}
+                                    onChange={(e) => setResidentForm({ ...residentForm, email: e.target.value })}
+                                    className={inputClass}
+                                />
+                            </div>
+                            <div>
+                                <label className={labelClass}>Phone *</label>
                                 <input
                                     type="text"
                                     required
-                                    placeholder="e.g. Rahul Sharma"
-                                    value={residentForm.name}
-                                    onChange={(e) => setResidentForm({ ...residentForm, name: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
+                                    placeholder="9876543210"
+                                    value={residentForm.phone}
+                                    onChange={(e) => setResidentForm({ ...residentForm, phone: e.target.value })}
+                                    className={inputClass}
                                 />
                             </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Email *</label>
-                                    <input
-                                        type="email"
-                                        required
-                                        placeholder="rahul@gmail.com"
-                                        value={residentForm.email}
-                                        onChange={(e) => setResidentForm({ ...residentForm, email: e.target.value })}
-                                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Phone *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="9876543210"
-                                        value={residentForm.phone}
-                                        onChange={(e) => setResidentForm({ ...residentForm, phone: e.target.value })}
-                                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Flat Assignment *</label>
-                                    <select
-                                        required
-                                        value={residentForm.flatId}
-                                        onChange={(e) => setResidentForm({ ...residentForm, flatId: e.target.value })}
-                                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                    >
-                                        <option value="">Select Flat</option>
-                                        {flats.map((f) => (
-                                            <option key={f._id} value={f._id}>Flat {f.flatNumber} ({f.building?.name})</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Type *</label>
-                                    <select
-                                        value={residentForm.residentType}
-                                        onChange={(e) => setResidentForm({ ...residentForm, residentType: e.target.value })}
-                                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                    >
-                                        <option value="owner">Owner</option>
-                                        <option value="tenant">Tenant</option>
-                                        <option value="family_member">Family Member</option>
-                                    </select>
-                                </div>
-                            </div>
-
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Initial Password *</label>
-                                <input
-                                    type="password"
+                                <label className={labelClass}>Flat Assignment *</label>
+                                <select
                                     required
-                                    placeholder="••••••••"
-                                    value={residentForm.password}
-                                    onChange={(e) => setResidentForm({ ...residentForm, password: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
-                                />
+                                    value={residentForm.flatId}
+                                    onChange={(e) => setResidentForm({ ...residentForm, flatId: e.target.value })}
+                                    className={inputClass}
+                                >
+                                    <option value="">Select Flat</option>
+                                    {flats.map((f) => (
+                                        <option key={f._id} value={f._id}>Flat {f.flatNumber} ({f.building?.name})</option>
+                                    ))}
+                                </select>
                             </div>
+                            <div>
+                                <label className={labelClass}>Type *</label>
+                                <select
+                                    value={residentForm.residentType}
+                                    onChange={(e) => setResidentForm({ ...residentForm, residentType: e.target.value })}
+                                    className={inputClass}
+                                >
+                                    <option value="owner">Owner</option>
+                                    <option value="tenant">Tenant</option>
+                                    <option value="family_member">Family Member</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label className={labelClass}>Initial Password *</label>
+                            <input
+                                type="password"
+                                required
+                                placeholder="••••••••"
+                                value={residentForm.password}
+                                onChange={(e) => setResidentForm({ ...residentForm, password: e.target.value })}
+                                className={inputClass}
+                            />
+                        </div>
+                        <FormFooter submitLabel="Proceed & Onboard" processingLabel="Dispatching Email..." />
+                    </form>
+                </ModalWrapper>
+            )}
 
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                                <button
-                                    type="button"
-                                    onClick={resetForms}
-                                    className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all border border-slate-200"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-[#e11d48] hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 disabled:opacity-50"
-                                >
-                                    {isSubmitting ? 'Dispatching Email...' : 'Proceed & Onboard'}
-                                </button>
+            {/* 4. Onboard Staff Modal */}
+            {activeModal === 'staff' && (
+                <ModalWrapper
+                    title="Onboard Staff Member"
+                    subtitle="Add security or maintenance personnel to the system"
+                    onClose={resetForms}
+                >
+                    <form
+                        onSubmit={async (e) => {
+                            e.preventDefault();
+                            setErrorMsg('');
+                            setIsSubmitting(true);
+                            try {
+                                const formData = new FormData(e.currentTarget);
+                                const payload = {
+                                    name: formData.get('name'),
+                                    email: formData.get('email'),
+                                    phone: formData.get('phone'),
+                                    password: formData.get('password'),
+                                    role: formData.get('role') || 'staff',
+                                    department: formData.get('department') || 'Security',
+                                };
+                                const res = await api.post('/staff', payload);
+                                if (res.data?.success) {
+                                    toast.success('Staff member onboarded!');
+                                    setSuccessMsg('Staff member added!');
+                                    loadData();
+                                    setTimeout(resetForms, 1200);
+                                }
+                            } catch (err: any) {
+                                const msg = err.response?.data?.message || 'Failed to onboard staff.';
+                                toast.error(msg);
+                                setErrorMsg(msg);
+                            } finally {
+                                setIsSubmitting(false);
+                            }
+                        }}
+                        className="space-y-4"
+                    >
+                        <div>
+                            <label className={labelClass}>Full Name *</label>
+                            <input name="name" type="text" required placeholder="e.g. Suresh Kumar" className={inputClass} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelClass}>Email *</label>
+                                <input name="email" type="email" required placeholder="suresh@res.com" className={inputClass} />
                             </div>
-                        </form>
-                    </div>
-                </div>
+                            <div>
+                                <label className={labelClass}>Phone *</label>
+                                <input name="phone" type="text" required placeholder="9876543210" className={inputClass} />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelClass}>Department</label>
+                                <select name="department" className={inputClass}>
+                                    <option value="Security">Security</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                    <option value="Housekeeping">Housekeeping</option>
+                                    <option value="Plumbing">Plumbing</option>
+                                    <option value="Electrical">Electrical</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className={labelClass}>Initial Password *</label>
+                                <input name="password" type="password" required placeholder="••••••••" className={inputClass} />
+                            </div>
+                        </div>
+                        <FormFooter submitLabel="Add Staff Member" processingLabel="Processing..." />
+                    </form>
+                </ModalWrapper>
+            )}
+
+            {/* 5. Broadcast Notice Modal */}
+            {activeModal === 'notice' && (
+                <ModalWrapper
+                    title="Broadcast Notice"
+                    subtitle="Post an announcement visible to all residents"
+                    onClose={resetForms}
+                >
+                    <form onSubmit={handleBroadcastNotice} className="space-y-4">
+                        <div>
+                            <label className={labelClass}>Notice Title *</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g. Water Supply Shutdown on 15th Oct"
+                                value={noticeForm.title}
+                                onChange={(e) => setNoticeForm({ ...noticeForm, title: e.target.value })}
+                                className={inputClass}
+                            />
+                        </div>
+                        <div>
+                            <label className={labelClass}>Notice Content *</label>
+                            <textarea
+                                required
+                                rows={4}
+                                placeholder="Write the detailed notice content for residents..."
+                                value={noticeForm.content}
+                                onChange={(e) => setNoticeForm({ ...noticeForm, content: e.target.value })}
+                                className={`${inputClass} resize-none`}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelClass}>Category</label>
+                                <select
+                                    value={noticeForm.category}
+                                    onChange={(e) => setNoticeForm({ ...noticeForm, category: e.target.value })}
+                                    className={inputClass}
+                                >
+                                    <option value="general">General</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="security">Security</option>
+                                    <option value="event">Event</option>
+                                    <option value="emergency">Emergency</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className={labelClass}>Priority</label>
+                                <select
+                                    value={noticeForm.priority}
+                                    onChange={(e) => setNoticeForm({ ...noticeForm, priority: e.target.value })}
+                                    className={inputClass}
+                                >
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-slate-900 transition-colors">
+                            <input
+                                type="checkbox"
+                                checked={noticeForm.isPinned}
+                                onChange={(e) => setNoticeForm({ ...noticeForm, isPinned: e.target.checked })}
+                                className="w-4 h-4 accent-rose-600"
+                            />
+                            <span className="text-xs font-bold text-slate-700">Pin this notice to the top of the feed</span>
+                        </label>
+                        <FormFooter submitLabel="Broadcast Now" processingLabel="Broadcasting..." />
+                    </form>
+                </ModalWrapper>
             )}
         </div>
     );

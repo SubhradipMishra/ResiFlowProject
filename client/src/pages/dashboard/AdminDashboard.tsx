@@ -23,7 +23,7 @@ const AdminDashboard: React.FC = () => {
     const [buildingForm, setBuildingForm] = useState({ name: '', buildingNumber: '', totalFloors: 4, description: '' });
     const [flatForm, setFlatForm] = useState({ flatNumber: '', buildingId: '', floor: 1, type: '2BHK', area: 1200, status: 'vacant', monthlyMaintenance: 3500 });
     const [residentForm, setResidentForm] = useState({ name: '', email: '', phone: '', password: '', flatId: '', residentType: 'owner' });
-    const [noticeForm, setNoticeForm] = useState({ title: '', content: '', category: 'general', priority: 'medium', isPinned: false });
+    const [noticeForm, setNoticeForm] = useState({ title: '', description: '', type: 'general', priority: 'medium', isPinned: false });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
@@ -152,13 +152,24 @@ const AdminDashboard: React.FC = () => {
     const handleBroadcastNotice = async (e: React.FormEvent) => {
         e.preventDefault();
         setErrorMsg('');
+        if (!noticeForm.title?.trim() || !noticeForm.description?.trim()) {
+            setErrorMsg('Notice title and description are required');
+            return;
+        }
         setIsSubmitting(true);
         try {
-            const res = await api.post('/notice', noticeForm);
+            const payload = {
+                title: noticeForm.title.trim(),
+                description: noticeForm.description.trim(),
+                type: noticeForm.type || 'general',
+                priority: noticeForm.priority || 'medium',
+                isPinned: noticeForm.isPinned || false,
+            };
+            const res = await api.post('/notice', payload);
             if (res.data?.success) {
                 toast.success('Notice broadcast to all residents!');
                 setSuccessMsg('Notice broadcast successfully!');
-                setNoticeForm({ title: '', content: '', category: 'general', priority: 'medium', isPinned: false });
+                setNoticeForm({ title: '', description: '', type: 'general', priority: 'medium', isPinned: false });
                 loadData();
                 setTimeout(resetForms, 1200);
             }
@@ -698,22 +709,22 @@ const AdminDashboard: React.FC = () => {
                             />
                         </div>
                         <div>
-                            <label className={labelClass}>Notice Content *</label>
+                            <label className={labelClass}>Notice Content / Description *</label>
                             <textarea
                                 required
                                 rows={4}
                                 placeholder="Write the detailed notice content for residents..."
-                                value={noticeForm.content}
-                                onChange={(e) => setNoticeForm({ ...noticeForm, content: e.target.value })}
+                                value={noticeForm.description}
+                                onChange={(e) => setNoticeForm({ ...noticeForm, description: e.target.value })}
                                 className={`${inputClass} resize-none`}
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className={labelClass}>Category</label>
+                                <label className={labelClass}>Category / Type</label>
                                 <select
-                                    value={noticeForm.category}
-                                    onChange={(e) => setNoticeForm({ ...noticeForm, category: e.target.value })}
+                                    value={noticeForm.type}
+                                    onChange={(e) => setNoticeForm({ ...noticeForm, type: e.target.value })}
                                     className={inputClass}
                                 >
                                     <option value="general">General</option>
@@ -721,6 +732,9 @@ const AdminDashboard: React.FC = () => {
                                     <option value="security">Security</option>
                                     <option value="event">Event</option>
                                     <option value="emergency">Emergency</option>
+                                    <option value="parking">Parking</option>
+                                    <option value="meeting">Meeting</option>
+                                    <option value="other">Other</option>
                                 </select>
                             </div>
                             <div>

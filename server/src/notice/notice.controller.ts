@@ -2,33 +2,61 @@ import { Request, Response } from "express";
 import NoticeModel from "./notice.model";
 import ResidentModel from "../resident/resident.model";
 import ResidenceModel from "../residence/residence.model";
+import AdminModel from "../admin/admin.schema";
 import { asyncHandler } from "../utils/async-handler";
 import { ApiError } from "../utils/api-error";
 import { ApiResponse } from "../utils/api-response";
 import { AuthenticatedRequest } from "../middleware/gaurd.middleware";
 import { sendNoticeMail } from "../utils/mail.util";
 
+// Helper to resolve Admin's Residence robustly
+const findAdminResidence = async (adminId?: string, residenceIdFromToken?: string) => {
+    if (residenceIdFromToken) {
+        const byToken = await ResidenceModel.findById(residenceIdFromToken);
+        if (byToken) return byToken;
+    }
+
+    if (!adminId) return null;
+
+    let residence = await ResidenceModel.findOne({ admin: adminId, isActive: true });
+    if (residence) return residence;
+
+    residence = await ResidenceModel.findOne({ admin: adminId });
+    if (residence) return residence;
+
+    const admin = await AdminModel.findById(adminId);
+    if (admin?.residence) {
+        residence = await ResidenceModel.findById(admin.residence);
+        if (residence) return residence;
+    }
+
+    return null;
+};
+
 // Admin Action: Create Notice
 export const CreateNotice = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-    console.log(req.body);
     const adminId = req.user?.id;
-    const { title, description, type, priority, targetType, targetBuildings, targetFlats, publishAt, expiresAt, isPinned } = req.body;
+    const { title, description, content, type, category, priority, targetType, targetBuildings, targetFlats, publishAt, expiresAt, isPinned } = req.body;
 
-    if (!title || !description) {
+    const finalDescription = (description || content)?.toString().trim();
+    const finalTitle = title?.toString().trim();
+    const finalType = type || category || "general";
+
+    if (!finalTitle || !finalDescription) {
         throw new ApiError(400, "Notice title and description are required");
     }
 
-    const residence = await ResidenceModel.findOne({ admin: adminId, isActive: true });
+    const residence = await findAdminResidence(adminId, (req.user as any)?.residenceId || (req.user as any)?.residence);
     if (!residence) {
         throw new ApiError(400, "No active residence found for your admin account");
     }
 
     const notice = await NoticeModel.create({
-        title,
-        description,
+        title: finalTitle,
+        description: finalDescription,
         residence: residence._id,
         createdBy: adminId,
-        type: type || "general",
+        type: finalType,
         priority: priority || "medium",
         targetType: targetType || "all",
         targetBuildings: targetBuildings || [],
@@ -41,25 +69,23 @@ export const CreateNotice = asyncHandler(async (req: AuthenticatedRequest, res: 
 
     // Send email broadcast
     let emailsToNotify: string[] = [];
-    if (targetType === "all") {
-        const residents = await ResidentModel.find({ isActive: true }).populate({
-            path: 'flat',
-            match: { building: { $in: await (await import('../building/building.schema')).default.find({ residence: residence._id }).distinct('_id') } }
-        });
-        // Simplification: In reality, we'd do a better joined query. For now we assume active residents of this society.
-        // Let's do a strict query:
-        const residentDocs = await ResidentModel.find({ isActive: true }).populate('flat');
-        emailsToNotify = residentDocs
-            .filter(r => r.email)
-            .map(r => r.email as string);
+    if (targetType === "all" || !targetType) {
+        try {
+            const residentDocs = await ResidentModel.find({ isActive: true }).populate('flat');
+            emailsToNotify = residentDocs
+                .filter(r => r.email)
+                .map(r => r.email as string);
+        } catch (e) {
+            console.error("Failed to query residents for notice email:", e);
+        }
     }
 
     if (emailsToNotify.length > 0) {
         // Send email async
         sendNoticeMail({
             emails: emailsToNotify,
-            title,
-            description,
+            title: finalTitle,
+            description: finalDescription,
             priority: notice.priority as string,
             societyName: residence.name,
         }).catch(console.error);
@@ -73,12 +99,20 @@ export const UpdateNotice = asyncHandler(async (req: AuthenticatedRequest, res: 
     const { id } = req.params;
     const adminId = req.user?.id;
 
-    const residence = await ResidenceModel.findOne({ admin: adminId });
+    const residence = await findAdminResidence(adminId, (req.user as any)?.residenceId || (req.user as any)?.residence);
     if (!residence) throw new ApiError(404, "Residence not found");
+
+    const updateData = { ...req.body };
+    if (req.body.content && !req.body.description) {
+        updateData.description = req.body.content;
+    }
+    if (req.body.category && !req.body.type) {
+        updateData.type = req.body.category;
+    }
 
     const notice = await NoticeModel.findOneAndUpdate(
         { _id: id, residence: residence._id },
-        req.body,
+        updateData,
         { new: true }
     );
 
@@ -92,7 +126,7 @@ export const DeleteNotice = asyncHandler(async (req: AuthenticatedRequest, res: 
     const { id } = req.params;
     const adminId = req.user?.id;
 
-    const residence = await ResidenceModel.findOne({ admin: adminId });
+    const residence = await findAdminResidence(adminId, (req.user as any)?.residenceId || (req.user as any)?.residence);
     if (!residence) throw new ApiError(404, "Residence not found");
 
     const notice = await NoticeModel.findOneAndDelete({ _id: id, residence: residence._id });
@@ -115,7 +149,7 @@ export const GetNoticeFeed = asyncHandler(async (req: AuthenticatedRequest, res:
 
     if (role === "admin") {
         const adminId = req.user?.id;
-        const residence = await ResidenceModel.findOne({ admin: adminId });
+        const residence = await findAdminResidence(adminId, (req.user as any)?.residenceId || (req.user as any)?.residence);
         if (residence) {
             filter.residence = residence._id;
         }
@@ -125,13 +159,11 @@ export const GetNoticeFeed = asyncHandler(async (req: AuthenticatedRequest, res:
         if (resident && resident.flat) {
             const flatId = resident.flat._id;
             const buildingId = resident.flat.building;
-            // Get residence via building
             const building: any = await (await import('../building/building.schema')).default.findById(buildingId);
             if (building) {
                 filter.residence = building.residence;
             }
 
-            // Notice targeting logic
             filter.$and = [
                 {
                     $or: [

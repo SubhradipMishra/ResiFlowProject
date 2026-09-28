@@ -175,3 +175,30 @@ export const unifiedLogout = asyncHandler(async (_req: Request, res: Response) =
         new ApiResponse(200, null, "Logged out successfully")
     );
 });
+
+// 5. Resend OTP
+export const resendOtp = asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body;
+    if (!email) {
+        throw new ApiError(400, "Email is required to resend OTP");
+    }
+
+    const found = await findUserByEmail(email.toLowerCase().trim());
+    if (!found) {
+        throw new ApiError(404, "Account not found");
+    }
+
+    const { user } = found;
+    const otp = generateOTP();
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save({ validateBeforeSave: false });
+
+    if (user.email) {
+        await sendOtpMail({ email: user.email, name: user.name, otp });
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, { email: user.email }, "New OTP sent to your email.")
+    );
+});

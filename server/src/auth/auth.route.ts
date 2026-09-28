@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { unifiedLogin, unifiedVerifyOtp, getMe, unifiedLogout } from "./auth.controller";
+import { unifiedLogin, unifiedVerifyOtp, resendOtp, getMe, unifiedLogout } from "./auth.controller";
 import { AnyAuthGuard } from "../middleware/gaurd.middleware";
 
 const AuthRouter = Router();
 
 AuthRouter.post("/login", unifiedLogin);
 AuthRouter.post("/verify-otp", unifiedVerifyOtp);
+AuthRouter.post("/resend-otp", resendOtp);
 AuthRouter.get("/me", AnyAuthGuard, getMe);
 AuthRouter.post("/logout", unifiedLogout);
 

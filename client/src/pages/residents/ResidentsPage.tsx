@@ -360,15 +360,18 @@ const ResidentsPage: React.FC = () => {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Initial Password *</label>
+                                <label className="block text-xs font-bold text-slate-700 uppercase mb-1 flex items-center justify-between">
+                                    <span>Initial Password (Optional)</span>
+                                    <span className="text-[10px] text-emerald-600 font-medium lowercase">auto-generated (6 chars) if blank</span>
+                                </label>
                                 <input
                                     type="password"
-                                    required
-                                    placeholder="••••••••"
+                                    placeholder="Leave blank to auto-generate & email"
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
                                 />
+                                <p className="text-[11px] text-slate-400 mt-1">A 6-character temporary password will be auto-generated and emailed to the resident.</p>
                             </div>
 
                             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">

@@ -7,6 +7,7 @@ import { ApiResponse } from "../utils/api-response";
 import { generateAccessToken, generateRefreshToken, setAuthCookies, clearAuthCookies } from "../utils/jwt.util";
 import { AuthenticatedRequest } from "../middleware/gaurd.middleware";
 import { sendAccountCredentialsMail, sendOtpMail } from "../utils/mail.util";
+import { generateRandomPassword } from "../utils/password.util";
 
 // Generate random 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -14,7 +15,7 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 // Admin Action: Create Staff
 export const CreateStaff = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const adminId = req.user?.id;
-    const { name, email, phone, role, department, employeeId, joiningDate, salary, address, emergencyContact, password } = req.body;
+    const { name, email, phone, role, department, employeeId, joiningDate, salary, address, emergencyContact } = req.body;
 
     if (!name || !phone || !role || !employeeId) {
         throw new ApiError(400, "Name, phone, role, and employeeId are required");
@@ -30,11 +31,14 @@ export const CreateStaff = asyncHandler(async (req: AuthenticatedRequest, res: R
         throw new ApiError(400, `Staff with Employee ID ${employeeId} already exists in this residence`);
     }
 
+    // Generate randomized 6-character temporary password (or use provided if given)
+    const rawPassword = req.body.password?.trim() || generateRandomPassword(6);
+
     const newStaff = await StaffModel.create({
         name,
         email: email ? email.toLowerCase() : undefined,
         phone,
-        password, // Optional, only if they need login
+        password: rawPassword,
         role,
         department,
         employeeId,
@@ -46,18 +50,18 @@ export const CreateStaff = asyncHandler(async (req: AuthenticatedRequest, res: R
         isActive: true,
     });
 
-    // If email and password provided, send credentials
-    if (email && password) {
+    // If email is provided, send credentials with the raw randomized password
+    if (newStaff.email) {
         await sendAccountCredentialsMail({
-            email: newStaff.email as string,
+            email: newStaff.email,
             name: newStaff.name,
             role: `Staff (${role})`,
-            password,
+            password: rawPassword,
             societyName: residence.name,
         });
     }
 
-    return res.status(201).json(new ApiResponse(201, newStaff, "Staff created successfully"));
+    return res.status(201).json(new ApiResponse(201, newStaff, "Staff created successfully and credentials dispatched if email provided"));
 });
 
 // Admin Action: Get All Staff

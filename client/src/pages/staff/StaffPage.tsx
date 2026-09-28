@@ -424,14 +424,18 @@ const StaffPage: React.FC = () => {
                             </div>
 
                             <div>
-                                <label className="block font-black text-slate-700 uppercase tracking-wider mb-1">Password (Optional)</label>
+                                <label className="block font-black text-slate-700 uppercase tracking-wider mb-1 flex items-center justify-between">
+                                    <span>Password (Optional)</span>
+                                    <span className="text-[10px] text-emerald-600 font-bold lowercase">auto-generated (6 chars) if blank</span>
+                                </label>
                                 <input
                                     type="password"
-                                    placeholder="••••••••"
+                                    placeholder="Leave blank to auto-generate & email"
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     className="w-full px-3 py-2.5 rounded-xl border-2 border-slate-900 font-bold focus:outline-none"
                                 />
+                                <p className="text-[11px] text-slate-500 mt-1">A 6-character random password will be created & emailed to staff if email is provided.</p>
                             </div>
 
                             <button

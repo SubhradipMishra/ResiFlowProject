@@ -88,8 +88,8 @@ const SuperAdminDashboard: React.FC = () => {
         setFormError('');
         setSuccessMsg('');
 
-        if (!adminForm.name || !adminForm.email || !adminForm.password) {
-            setFormError('Name, email, and temporary password are required.');
+        if (!adminForm.name || !adminForm.email) {
+            setFormError('Name and email are required.');
             return;
         }
 
@@ -497,20 +497,21 @@ const SuperAdminDashboard: React.FC = () => {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                                    Temporary Password *
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                                    <span>Temporary Password (Optional)</span>
+                                    <span className="text-[10px] text-emerald-600 font-medium lowercase">auto-generated (6 chars) if blank</span>
                                 </label>
                                 <div className="relative">
                                     <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                                     <input
                                         type="password"
-                                        required
-                                        placeholder="••••••••"
+                                        placeholder="Leave blank to auto-generate & email"
                                         value={adminForm.password}
                                         onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
                                         className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
                                     />
                                 </div>
+                                <p className="text-[11px] text-slate-400 mt-1">A secure 6-character random password will be created & emailed to the admin.</p>
                             </div>
 
                             <div>

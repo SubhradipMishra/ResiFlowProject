@@ -9,6 +9,7 @@ import { ApiResponse } from "../utils/api-response";
 import { generateAccessToken, generateRefreshToken, setAuthCookies, clearAuthCookies } from "../utils/jwt.util";
 import { AuthenticatedRequest } from "../middleware/gaurd.middleware";
 import { sendAccountCredentialsMail, sendOtpMail } from "../utils/mail.util";
+import { generateRandomPassword } from "../utils/password.util";
 
 // Generate random 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -19,7 +20,6 @@ export const CreateResident = asyncHandler(async (req: AuthenticatedRequest, res
         name,
         email,
         phone,
-        password,
         flatId,
         residentType,
         gender,
@@ -27,8 +27,8 @@ export const CreateResident = asyncHandler(async (req: AuthenticatedRequest, res
         emergencyContact,
     } = req.body;
 
-    if (!name || !email || !phone || !password || !flatId) {
-        throw new ApiError(400, "Name, email, phone, password, and flat assignment are required");
+    if (!name || !email || !phone || !flatId) {
+        throw new ApiError(400, "Name, email, phone, and flat assignment are required");
     }
 
     const flat = await FlatModel.findById(flatId).populate("building");
@@ -39,11 +39,14 @@ export const CreateResident = asyncHandler(async (req: AuthenticatedRequest, res
         throw new ApiError(400, `Resident with email ${email} already exists`);
     }
 
+    // Generate randomized 6-character temporary password (or use provided if given)
+    const rawPassword = req.body.password?.trim() || generateRandomPassword(6);
+
     const newResident = await ResidentModel.create({
         name,
         email: email.toLowerCase(),
         phone,
-        password,
+        password: rawPassword,
         flat: flatId,
         residentType: residentType || "family_member",
         gender,
@@ -83,7 +86,7 @@ export const CreateResident = asyncHandler(async (req: AuthenticatedRequest, res
         email: newResident.email,
         name: newResident.name,
         role: "resident",
-        password,
+        password: rawPassword,
         societyName,
     });
 

@@ -547,15 +547,18 @@ const AdminDashboard: React.FC = () => {
                             </div>
                         </div>
                         <div>
-                            <label className={labelClass}>Initial Password *</label>
+                            <label className={`${labelClass} flex items-center justify-between`}>
+                                <span>Initial Password (Optional)</span>
+                                <span className="text-[10px] text-emerald-600 font-medium lowercase">auto-generated (6 chars) if blank</span>
+                            </label>
                             <input
                                 type="password"
-                                required
-                                placeholder="••••••••"
+                                placeholder="Leave blank to auto-generate & email"
                                 value={residentForm.password}
                                 onChange={(e) => setResidentForm({ ...residentForm, password: e.target.value })}
                                 className={inputClass}
                             />
+                            <p className="text-[11px] text-slate-400 mt-1">A 6-character temporary password will be auto-generated and emailed to resident.</p>
                         </div>
                         <FormFooter submitLabel="Proceed & Onboard" processingLabel="Dispatching Email..." />
                     </form>
@@ -607,8 +610,8 @@ const AdminDashboard: React.FC = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className={labelClass}>Email *</label>
-                                <input name="email" type="email" required placeholder="suresh@res.com" className={inputClass} />
+                                <label className={labelClass}>Email (Optional)</label>
+                                <input name="email" type="email" placeholder="suresh@res.com" className={inputClass} />
                             </div>
                             <div>
                                 <label className={labelClass}>Phone *</label>
@@ -627,8 +630,11 @@ const AdminDashboard: React.FC = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className={labelClass}>Initial Password *</label>
-                                <input name="password" type="password" required placeholder="••••••••" className={inputClass} />
+                                <label className={`${labelClass} flex items-center justify-between`}>
+                                    <span>Initial Password</span>
+                                    <span className="text-[10px] text-emerald-600 font-medium lowercase">auto-6 char</span>
+                                </label>
+                                <input name="password" type="password" placeholder="Leave blank to auto-generate" className={inputClass} />
                             </div>
                         </div>
                         <FormFooter submitLabel="Add Staff Member" processingLabel="Processing..." />

@@ -12,6 +12,7 @@ import { ApiResponse } from "../utils/api-response";
 import { generateAccessToken, generateRefreshToken, setAuthCookies, clearAuthCookies } from "../utils/jwt.util";
 import { AuthenticatedRequest } from "../middleware/gaurd.middleware";
 import { sendAccountCredentialsMail, sendOtpMail } from "../utils/mail.util";
+import { generateRandomPassword } from "../utils/password.util";
 
 // Generate random 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -233,9 +234,9 @@ export const GetAllResidencesForSuperAdmin = asyncHandler(async (req: Authentica
 
 // SuperAdmin: Create Admin Account & Assign Residence
 export const CreateAdminBySuperAdmin = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-    const { name, email, password, phone, residenceId } = req.body;
-    if (!name || !email || !password) {
-        throw new ApiError(400, "Name, email, and temporary password are required");
+    const { name, email, phone, residenceId } = req.body;
+    if (!name || !email) {
+        throw new ApiError(400, "Name and email are required");
     }
 
     const exist = await AdminModel.findOne({ email: email.toLowerCase() });
@@ -251,10 +252,13 @@ export const CreateAdminBySuperAdmin = asyncHandler(async (req: AuthenticatedReq
         }
     }
 
+    // Generate randomized 6-character temporary password (or use provided if given)
+    const rawPassword = req.body.password?.trim() || generateRandomPassword(6);
+
     const newAdmin = await AdminModel.create({
         name,
         email: email.toLowerCase(),
-        password,
+        password: rawPassword,
         phone,
         residence: residenceId || null,
         createdBy: req.user?.id,
@@ -267,12 +271,12 @@ export const CreateAdminBySuperAdmin = asyncHandler(async (req: AuthenticatedReq
         await assignedResidence.save();
     }
 
-    // Send credentials & activation notice via Brevo
+    // Send credentials & activation notice with raw password via Brevo
     await sendAccountCredentialsMail({
         email: newAdmin.email,
         name: newAdmin.name,
         role: "admin",
-        password,
+        password: rawPassword,
         societyName: assignedResidence ? assignedResidence.name : undefined,
     });
 

@@ -102,16 +102,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) =
             {/* Payment Mode Selector */}
             <div className="mt-5 space-y-2">
               <label className="block text-xs font-semibold text-slate-700">Choose Payment Method</label>
-              
+
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => setMethod('upi')}
-                  className={`p-2.5 rounded-xl border text-center transition-all ${
-                    method === 'upi'
+                  className={`p-2.5 rounded-xl border text-center transition-all ${method === 'upi'
                       ? 'border-brand-600 bg-brand-50/60 text-brand-700 font-bold shadow-sm'
                       : 'border-slate-200 text-slate-600 text-xs'
-                  }`}
+                    }`}
                 >
                   <i className="ri-qr-code-line text-lg block"></i>
                   <span className="text-[11px]">Instant UPI</span>
@@ -120,11 +119,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) =
                 <button
                   type="button"
                   onClick={() => setMethod('card')}
-                  className={`p-2.5 rounded-xl border text-center transition-all ${
-                    method === 'card'
+                  className={`p-2.5 rounded-xl border text-center transition-all ${method === 'card'
                       ? 'border-brand-600 bg-brand-50/60 text-brand-700 font-bold shadow-sm'
                       : 'border-slate-200 text-slate-600 text-xs'
-                  }`}
+                    }`}
                 >
                   <i className="ri-bank-card-line text-lg block"></i>
                   <span className="text-[11px]">Card / Debit</span>
@@ -133,11 +131,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) =
                 <button
                   type="button"
                   onClick={() => setMethod('netbanking')}
-                  className={`p-2.5 rounded-xl border text-center transition-all ${
-                    method === 'netbanking'
+                  className={`p-2.5 rounded-xl border text-center transition-all ${method === 'netbanking'
                       ? 'border-brand-600 bg-brand-50/60 text-brand-700 font-bold shadow-sm'
                       : 'border-slate-200 text-slate-600 text-xs'
-                  }`}
+                    }`}
                 >
                   <i className="ri-bank-line text-lg block"></i>
                   <span className="text-[11px]">NetBanking</span>

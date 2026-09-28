@@ -9,24 +9,50 @@ import { AuthenticatedRequest } from "../middleware/gaurd.middleware";
 import { sendAccountCredentialsMail, sendOtpMail } from "../utils/mail.util";
 import { generateRandomPassword } from "../utils/password.util";
 
+import AdminModel from "../admin/admin.schema";
+
 // Generate random 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+// Helper to resolve Admin's Residence robustly
+const findAdminResidence = async (adminId?: string, residenceIdFromToken?: string) => {
+    if (residenceIdFromToken) {
+        const byToken = await ResidenceModel.findById(residenceIdFromToken);
+        if (byToken) return byToken;
+    }
+
+    if (!adminId) return null;
+
+    let residence = await ResidenceModel.findOne({ admin: adminId, isActive: true });
+    if (residence) return residence;
+
+    residence = await ResidenceModel.findOne({ admin: adminId });
+    if (residence) return residence;
+
+    const admin = await AdminModel.findById(adminId);
+    if (admin?.residence) {
+        residence = await ResidenceModel.findById(admin.residence);
+        if (residence) return residence;
+    }
+
+    return null;
+};
 
 // Admin Action: Create Staff
 export const CreateStaff = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const adminId = req.user?.id;
-    const { name, email, phone, role, department, employeeId, joiningDate, salary, address, emergencyContact } = req.body;
+    const { name, email, phone, role, department, employeeId, joiningDate, salary, address, emergencyContact, workingHours } = req.body;
 
     if (!name || !phone || !role || !employeeId) {
         throw new ApiError(400, "Name, phone, role, and employeeId are required");
     }
 
-    const residence = await ResidenceModel.findOne({ admin: adminId, isActive: true });
+    const residence = await findAdminResidence(adminId, (req.user as any)?.residenceId || (req.user as any)?.residence);
     if (!residence) {
         throw new ApiError(400, "No active residence found for your admin account");
     }
 
-    const existingStaff = await StaffModel.findOne({ residence: residence._id, employeeId });
+    const existingStaff = await StaffModel.findOne({ residence: residence._id, employeeId: employeeId.toString().trim() });
     if (existingStaff) {
         throw new ApiError(400, `Staff with Employee ID ${employeeId} already exists in this residence`);
     }
@@ -34,31 +60,38 @@ export const CreateStaff = asyncHandler(async (req: AuthenticatedRequest, res: R
     // Generate randomized 6-character temporary password (or use provided if given)
     const rawPassword = req.body.password?.trim() || generateRandomPassword(6);
 
+    const cleanEmail = email && typeof email === "string" && email.trim().length > 0 ? email.toLowerCase().trim() : undefined;
+
     const newStaff = await StaffModel.create({
-        name,
-        email: email ? email.toLowerCase() : undefined,
-        phone,
+        name: name.toString().trim(),
+        email: cleanEmail,
+        phone: phone.toString().trim(),
         password: rawPassword,
         role,
-        department,
-        employeeId,
+        department: department || undefined,
+        employeeId: employeeId.toString().trim(),
         residence: residence._id,
-        joiningDate,
-        salary,
-        address,
-        emergencyContact,
+        joiningDate: joiningDate || undefined,
+        salary: salary ? Number(salary) : undefined,
+        address: address || undefined,
+        emergencyContact: emergencyContact || undefined,
+        workingHours: workingHours || undefined,
         isActive: true,
     });
 
     // If email is provided, send credentials with the raw randomized password
     if (newStaff.email) {
-        await sendAccountCredentialsMail({
-            email: newStaff.email,
-            name: newStaff.name,
-            role: `Staff (${role})`,
-            password: rawPassword,
-            societyName: residence.name,
-        });
+        try {
+            await sendAccountCredentialsMail({
+                email: newStaff.email,
+                name: newStaff.name,
+                role: `Staff (${role})`,
+                password: rawPassword,
+                societyName: residence.name,
+            });
+        } catch (mailErr) {
+            console.error("Failed to send staff welcome email:", mailErr);
+        }
     }
 
     return res.status(201).json(new ApiResponse(201, newStaff, "Staff created successfully and credentials dispatched if email provided"));
@@ -69,7 +102,7 @@ export const GetAllStaff = asyncHandler(async (req: AuthenticatedRequest, res: R
     const adminId = req.user?.id;
     const { role, department, search } = req.query;
 
-    const residence = await ResidenceModel.findOne({ admin: adminId });
+    const residence = await findAdminResidence(adminId, (req.user as any)?.residenceId || (req.user as any)?.residence);
     if (!residence) {
         return res.status(200).json(new ApiResponse(200, [], "No residence found"));
     }
@@ -95,7 +128,7 @@ export const UpdateStaff = asyncHandler(async (req: AuthenticatedRequest, res: R
     const { id } = req.params;
     const adminId = req.user?.id;
 
-    const residence = await ResidenceModel.findOne({ admin: adminId });
+    const residence = await findAdminResidence(adminId, (req.user as any)?.residenceId || (req.user as any)?.residence);
     if (!residence) throw new ApiError(404, "Residence not found");
 
     const staff = await StaffModel.findOneAndUpdate(
@@ -114,7 +147,7 @@ export const ToggleStaffStatus = asyncHandler(async (req: AuthenticatedRequest, 
     const { id } = req.params;
     const adminId = req.user?.id;
 
-    const residence = await ResidenceModel.findOne({ admin: adminId });
+    const residence = await findAdminResidence(adminId, (req.user as any)?.residenceId || (req.user as any)?.residence);
     if (!residence) throw new ApiError(404, "Residence not found");
 
     const staff = await StaffModel.findOne({ _id: id, residence: residence._id });
@@ -129,7 +162,7 @@ export const ToggleStaffStatus = asyncHandler(async (req: AuthenticatedRequest, 
 // Staff Action: Login (Step 1: Verify Password & Send OTP)
 export const LoginStaff = asyncHandler(async (req: Request, res: Response) => {
     const { email, phone, password } = req.body;
-    
+
     if ((!email && !phone) || !password) {
         throw new ApiError(400, "Email/Phone and password are required");
     }
@@ -171,7 +204,7 @@ export const LoginStaff = asyncHandler(async (req: Request, res: Response) => {
 // Staff Action: Verify OTP (Step 2: Issue Tokens)
 export const VerifyOtpStaff = asyncHandler(async (req: Request, res: Response) => {
     const { email, phone, otp } = req.body;
-    
+
     if ((!email && !phone) || !otp) {
         throw new ApiError(400, "Email/Phone and OTP are required");
     }

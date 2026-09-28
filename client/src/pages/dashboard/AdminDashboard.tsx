@@ -579,14 +579,31 @@ const AdminDashboard: React.FC = () => {
                             setIsSubmitting(true);
                             try {
                                 const formData = new FormData(e.currentTarget);
-                                const payload = {
-                                    name: formData.get('name'),
-                                    email: formData.get('email'),
-                                    phone: formData.get('phone'),
-                                    password: formData.get('password'),
-                                    role: formData.get('role') || 'staff',
-                                    department: formData.get('department') || 'Security',
+                                const name = (formData.get('name') as string)?.trim();
+                                const phone = (formData.get('phone') as string)?.trim();
+                                const employeeId = (formData.get('employeeId') as string)?.trim();
+                                const role = (formData.get('role') as string)?.trim();
+                                const email = (formData.get('email') as string)?.trim();
+                                const department = (formData.get('department') as string)?.trim();
+                                const password = (formData.get('password') as string)?.trim();
+
+                                if (!name || !phone || !role || !employeeId) {
+                                    setErrorMsg('Name, phone, role, and employeeId are required');
+                                    setIsSubmitting(false);
+                                    return;
+                                }
+
+                                const payload: any = {
+                                    name,
+                                    phone,
+                                    employeeId,
+                                    role,
+                                    department: department || 'Security Operations',
                                 };
+
+                                if (email) payload.email = email;
+                                if (password) payload.password = password;
+
                                 const res = await api.post('/staff', payload);
                                 if (res.data?.success) {
                                     toast.success('Staff member onboarded!');
@@ -610,28 +627,47 @@ const AdminDashboard: React.FC = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className={labelClass}>Email (Optional)</label>
-                                <input name="email" type="email" placeholder="suresh@res.com" className={inputClass} />
-                            </div>
-                            <div>
                                 <label className={labelClass}>Phone *</label>
                                 <input name="phone" type="text" required placeholder="9876543210" className={inputClass} />
+                            </div>
+                            <div>
+                                <label className={labelClass}>Employee ID *</label>
+                                <input name="employeeId" type="text" required placeholder="EMP-101" className={inputClass} />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className={labelClass}>Department</label>
-                                <select name="department" className={inputClass}>
-                                    <option value="Security">Security</option>
-                                    <option value="Maintenance">Maintenance</option>
-                                    <option value="Housekeeping">Housekeeping</option>
-                                    <option value="Plumbing">Plumbing</option>
-                                    <option value="Electrical">Electrical</option>
+                                <label className={labelClass}>Role / Skill *</label>
+                                <select name="role" required className={inputClass} defaultValue="security">
+                                    <option value="security">Security Guard</option>
+                                    <option value="plumber">Plumber</option>
+                                    <option value="electrician">Electrician</option>
+                                    <option value="cleaner">Cleaner</option>
+                                    <option value="gardener">Gardener</option>
+                                    <option value="receptionist">Receptionist</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="other">Other</option>
                                 </select>
                             </div>
                             <div>
+                                <label className={labelClass}>Department</label>
+                                <select name="department" className={inputClass} defaultValue="Security Operations">
+                                    <option value="Security Operations">Security</option>
+                                    <option value="Maintenance Department">Maintenance</option>
+                                    <option value="Housekeeping & Sanitation">Housekeeping</option>
+                                    <option value="Plumbing Department">Plumbing</option>
+                                    <option value="Electrical Department">Electrical</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelClass}>Email (Optional)</label>
+                                <input name="email" type="email" placeholder="suresh@res.com" className={inputClass} />
+                            </div>
+                            <div>
                                 <label className={`${labelClass} flex items-center justify-between`}>
-                                    <span>Initial Password</span>
+                                    <span>Password</span>
                                     <span className="text-[10px] text-emerald-600 font-medium lowercase">auto-6 char</span>
                                 </label>
                                 <input name="password" type="password" placeholder="Leave blank to auto-generate" className={inputClass} />

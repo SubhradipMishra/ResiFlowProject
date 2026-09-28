@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenPortal }) => {
 
   const navLinks = [
     { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
+   
     { name: 'Features', href: '#features' },
     { name: 'How It Works', href: '#how-it-works' },
     { name: 'Live Simulator', href: '#simulator', badge: 'Interactive' },

@@ -49,8 +49,8 @@ const StaffPage: React.FC = () => {
         setErrorMsg('');
         setSuccessMsg('');
 
-        if (!formData.name || !formData.phone || !formData.employeeId) {
-            setErrorMsg('Name, Phone, and Employee ID are required.');
+        if (!formData.name?.trim() || !formData.phone?.trim() || !formData.role?.trim() || !formData.employeeId?.trim()) {
+            setErrorMsg('Name, phone, role, and employeeId are required.');
             return;
         }
 
@@ -58,6 +58,10 @@ const StaffPage: React.FC = () => {
         try {
             const payload = {
                 ...formData,
+                name: formData.name.trim(),
+                phone: formData.phone.trim(),
+                role: formData.role.trim(),
+                employeeId: formData.employeeId.trim(),
                 workingHours: {
                     start: formData.workingHoursStart,
                     end: formData.workingHoursEnd,
@@ -376,8 +380,9 @@ const StaffPage: React.FC = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block font-black text-slate-700 uppercase tracking-wider mb-1">Role / Skill</label>
+                                    <label className="block font-black text-slate-700 uppercase tracking-wider mb-1">Role / Skill *</label>
                                     <select
+                                        required
                                         value={formData.role}
                                         onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                                         className="w-full px-3 py-2.5 rounded-xl border-2 border-slate-900 font-bold focus:outline-none"
@@ -386,7 +391,10 @@ const StaffPage: React.FC = () => {
                                         <option value="plumber">Plumber</option>
                                         <option value="electrician">Electrician</option>
                                         <option value="cleaner">Cleaner</option>
+                                        <option value="gardener">Gardener</option>
+                                        <option value="receptionist">Receptionist</option>
                                         <option value="maintenance">Maintenance Technician</option>
+                                        <option value="other">Other</option>
                                     </select>
                                 </div>
                             </div>
